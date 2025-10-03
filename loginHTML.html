@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Lesson Lounge</title>
+    <link rel="stylesheet" href="loginCSS.css">
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <!--Welcome section with conditional content-->
+            <div class="welcome-section">
+                <h1>The Lesson Lounge</h1>
+                <p v-if="activeTab === 'login'">
+                    Welcome back! Sign in to continue your learning journey
+                </p>
+                <p v-else>
+                    Join our community today and unlock a world of knowledge.
+                </p>
+                <p class="subtext" v-text="getSubtext()"></p>
+
+                <!--Dynamic user count display-->
+                <div class="user-count" v-show="showUserCount">
+                    <span v-text="`{userCount} users already joined!`"></span>
+                </div>
+            </div>
+
+            <!--form-->
+            <div class="form-section">
+                <div class="form-container">
+                    <!--Tab navigation-->
+                    <div class="tabs">
+                        <div class="tab" 
+                            :class="{active: activeTab === 'login'}"
+                            v-on:click="switchTab('login')">
+                            Login
+                        </div>
+                        <div class="tab" 
+                            :class="{active: activeTab === 'signup'}"
+                            v-on:click="switchTab('signup')">
+                            Sign up
+                        </div>
+                    </div>
+                    <!--Success/Error messages-->
+                    <div class="message"
+                        :class="{'success-message': message.type === 'success', 'error-message':message.type === 'error'}"
+                        v-if="message.text">
+
+                        <span v-html="message.text"></span>
+                        <button class="close-btn" v-on:click="clearMessage">&times;</button>
+                    </div>
+
+                    <!--loading spinner -->
+                    <div class="loading-spinner" v-if="isLoading">
+                        <div class="spinner"></div>
+                        <span>Processing...</span>
+                    </div>
+
+                    <!--Login form-->
+                    <form class="form" v-show="activeTab === 'login'" v-on:submit.prevent="login">
+                        <!--email-->
+                        <div class="form-group">
+                            <label for="login-email">Email Address</label>
+                            <input
+                                type="email"
+                                id="login-email"
+                                class="form-control"
+                                :class="{error: errors.loginEmail}"
+                                v-model.trim="loginForm.email"
+                                v-on:input="clearError('loginEmail')"
+                                v-on:blur="validateField('loginEmail')"
+                                placeholder="Enter your email"
+                                :disabled="isLoading">
+                            <span class="error-message" v-if="errors.loginEmail">
+                                {{errors.loginEmail}}
+                            </span>    
+                        </div>
+                        <!--password-->
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input
+                                type="password"
+                                id="login-password"
+                                class="form-control"
+                                :class="{error: errors.loginPassword}"
+                                v-model.trim="loginForm.password"
+                                v-on:input="clearError('loginPassword')"
+                                v-on:blur="validateField('loginPassword')"
+                                placeholder="Enter your password"
+                                :disabled="isLoading">
+                            <span class="error-message" v-if="errors.loginPassword">
+                                {{errors.loginPassword}}
+                            </span>    
+                        </div>
+
+                        <!--submit button-->
+                        <button type="submit" class="btn" :disabled="isLoading || !isLoginFormValid">
+                            <span v-if="isLoading">Signing in...</span>
+                            <span v-else>Sign in</span>
+                        </button>
+
+                        <div class="forgot-password">
+                            <a href="#" v-on:click.prevent="showForgotPassword">Forgot your password?</a>
+                        </div>
+                    </form>
+
+                    <!--Sign up form-->
+                    <form class="form" v-show="activeTab === 'signup'" v-on:submit.prevent="signup">
+                        <!--name-->
+                        <div class="form-group">
+                            <label for="signup-name">Full name</label>
+                            <input
+                                type="text"
+                                id="signup-name"
+                                class="form-control"
+                                :class="{error: errors.signupName}"
+                                v-model.trim="loginForm.name"
+                                v-on:input="clearError('signupName')"
+                                v-on:blur="validateField('signupName')"
+                                placeholder="Enter your full name"
+                                :disabled="isLoading">
+                            <span class="error-message" v-if="errors.signupName">
+                                {{errors.signupName}}
+                            </span>    
+                        </div>
+                        <!--email-->
+                        <div class="form-group">
+                            <label for="signup-email">Email Address</label>
+                            <input
+                                type="email"
+                                id="signup-email"
+                                class="form-control"
+                                :class="{error: errors.signupEmail}"
+                                v-model.trim="signupForm.email"
+                                v-on:input="clearError('signupEmail')"
+                                v-on:blur="validateField('signupEmail')"
+                                placeholder="Enter your email"
+                                :disabled="isLoading">
+                            <span class="error-message" v-if="errors.signupEmail">
+                                {{errors.signupEmail}}
+                            </span>    
+                        </div>
+                        <!--password-->
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <input
+                                type="password"
+                                id="signup-password"
+                                class="form-control"
+                                :class="{error: errors.signupPassword}"
+                                v-model.trim="signupForm.password"
+                                v-on:input="clearError('signupPassword')"
+                                v-on:blur="validateField('signupPassword')"
+                                placeholder="Enter your password"
+                                :disabled="isLoading">
+                            <span class="error-message" v-if="errors.signupPassword">
+                                {{errors.signupPassword}}
+                            </span>  
+                            
+                            <!--Password strength-->
+                            <div class="password-strength" v-if="signupForm.password && activeTab === 'signup'">
+                                <div class="strength-bar" :class="passwordStrength.class"></div>
+                                <span class="strength-text">{{passwordStrength.text}}</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-confirm">Confirm Password</label>
+                            <input
+                                type="password"
+                                id="signup-confirm"
+                                class="form-control"
+                                :class="{error: errors.signupConfirm}"
+                                v-model.trim="signupForm.confirmPassword"
+                                v-on:input="clearError('signupConfirm')"
+                                v-on:blur="validateField('signupConfirm')"
+                                placeholder="Confirm your password"
+                                :disabled="isLoading">
+                            <span class="error-message" v-if="errors.signupConfirm">
+                                {{errors.signupConfirm}}
+                            </span>  
+                        </div>
+
+                        <!--submit button-->
+                        <button type="submit" class="btn" :disabled="isLoading || !isSignupFormValid">
+                            <span v-if="isLoading">Creating Account...</span>
+                            <span v-else>Create Account</span>
+                        </button>
+
+                        <div class="forgot-password">
+                            <a href="#" v-on:click.prevent="showForgotPassword">Forgot your password?</a>
+                        </div>
+
+                        <div class="terms">
+                            By signing up, you agree to our
+                            <a href="#" v-on:click.prevent="showTerms">Terms of Service</a>
+                            <a href="#" v-on:click.prevent="showPrivacy">Privacy policy</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--js-->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.js"></script>
+    <script src="loginJS.js"></script>
+</body>
+</html>
