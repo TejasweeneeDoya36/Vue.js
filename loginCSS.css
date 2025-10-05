@@ -7,7 +7,7 @@
 }
 
 body{
-    background-color: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -28,7 +28,7 @@ body{
 
 .welcome-section{
     flex: 1;
-    background-color: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
     color: white;
     padding: 40px;
     display: flex;
@@ -60,12 +60,20 @@ body{
 .user-count{
     margin-top: 15px;
     padding: 8px 16px;
-    background: rgba(255,255,255.0.2);
+    background: rgba(255,255,255,0.2);
     border-radius: 20px;
     font-size: 0.9rem;
 }
 
 .form-section{
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-container{
     width: 100%;
     max-width: 320px;
     margin: 0 auto;
@@ -162,7 +170,7 @@ body{
 .btn{
     width: 100%;
     padding: 12px;
-    background-color: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
     color: white;
     border: none;
     border-radius: 8px;
@@ -230,6 +238,10 @@ body{
     color: white;
 }
 
+.error-message{
+    color: red;
+}
+
 .close-btn{
     background: none;
     border: none;
@@ -242,6 +254,7 @@ body{
 .loading-spinner{
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     padding: 15px;
     margin-bottom: 20px;
@@ -253,6 +266,7 @@ body{
     width: 20px;
     height: 20px;
     border: 2px solid #2575fc;
+    border-top: 2px solid transparent;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -305,6 +319,11 @@ body{
     background-color: #2ed573;
 }
 
+.strength-text{
+    font-size: 0.8rem;
+    color: #777;
+}
+
 .form-status{
     margin-top: 15px;
     padding: 10px;
@@ -313,7 +332,7 @@ body{
 }
 
 .form-status.info{
-    background-color: #fff3e0;
+    background-color: #e3f2fd;
     color: #1976d2;
 }
 
@@ -322,7 +341,7 @@ body{
     color: #f57c00; 
 }
 
-@media(max-width:768px){
+@media(max-width: 768px){
     .container{
         flex-direction: column;
         max-width: 450px;
@@ -337,7 +356,7 @@ body{
     }
 }
 
-@media(max-width:480px){
+@media(max-width: 480px){
 
     .welcome-section h1{
         font-size: 2rem;
