@@ -22,10 +22,10 @@ new Vue({
         },
         message:{
             text:'',
-            type:''
+            type:'' //success or error
         },
         isLoading: false,
-        userCount:12548,
+        userCount:12548, //to be amended
         showUserCount: true,
         passwordStrength:{
             class:'weak',
@@ -34,7 +34,7 @@ new Vue({
         //array of form validation rules
         validationRules:{
             email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            password:/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(a-zA-Z0-9!@#$%^&*){6,}$/
+            password:/^(?=.*[A-Z])(?=.*[0-9])(?=.[!@#$%^&*])(a-zA-Z0-9!@#$%^&*){6,}$/
         },
     },
     computed:{
@@ -44,7 +44,7 @@ new Vue({
         },
         //to check if sign up is valid
         isSignupFormValid: function(){
-            return this.signupForm.email && this.signupForm.password && this.signupForm.confirmPassword && this.loginForm.password.length >=6 && this.loginForm.password === this.signupForm.confirmPassword  &&this.isValidEmail(this.loginForm.email);
+            return this.signupForm.email && this.signupForm.password && this.signupForm.confirmPassword && this.loginForm.password.length >=6 && this.loginForm.password === this.signupForm.confirmPassword  && this.isValidEmail(this.loginForm.email);
         },
 
         //get form status message
@@ -52,7 +52,7 @@ new Vue({
             if (this.activeTab === 'login'){
                 return this.isLoginFormValid ? 'Ready to sign in!' : 'Please complete all fields correctly';
             }else{
-                return this.isSignupFormValid ? 'Ready to sign in!' : 'Please complete all fields correctly';
+                return this.isSignupFormValid ? 'Ready to create your account!' : 'Please complete all fields correctly';
             }
         },
 
@@ -159,10 +159,10 @@ new Vue({
             if(/[0-9]/.test(password)) strength++;
             if(/[^A-Za-z0-9]/.test(password)) strength++;
 
-            if (strength<=2){
+            if (strength <= 2){
                 this.passwordStrength.class='weak';
                 this.passwordStrength.text='Weak';
-            } else if (strength<=4){
+            } else if (strength <= 4){
                 this.passwordStrength.class='medium';
                 this.passwordStrength.text='Medium';
             }else{
@@ -219,8 +219,8 @@ new Vue({
                     isValid=false;
             }
 
-            if(!this.signupForm.password){
-                this.errors.confirmPassword='Password is required';
+            if(!this.signupForm.confirmPassword){
+                this.errors.confirmPassword='Please confirm your password';
                 isValid=false;
             } else if (this.signupForm.password !== this.signupForm.confirmPassword ){
                 this.errors.signupConfirm='Password do not match';
@@ -244,7 +244,7 @@ new Vue({
                     this.loginForm.password='';
                 },1500);
             }else{
-                this.showMessage("Login unsuccessful","error");
+                this.showMessage("Please fix the errors above","error");
             }
         },
 
@@ -274,7 +274,7 @@ new Vue({
                     },3000);
                 },1500);
             }else{
-                this.showMessage("Login unsuccessful","error");
+                this.showMessage("Please fix the errors above","error");
             }
         },
 
@@ -292,7 +292,7 @@ new Vue({
 
         getSubtext:function(){
             return this.activeTab === 'login'
-                ? 'Access your personlised dashboard and continue where you left off'
+                ? 'Access your personalised dashboard and continue where you left off'
                 : 'Create your account to explore our extensive library lessons';
         },
 
