@@ -89,7 +89,50 @@
                         </div>
                         <!--sort-->
                         <div class="sort-group">
-                            
+                            <label>Order:</label>
+                            <div class="order-buttons">
+                                <!--Ascending-->
+                                <button
+                                    class="order-btn"
+                                    :class=" { active: sortOrder === 'asc'}"
+                                    @click="setSortOrder('asc')">
+                                    Ascending
+                                    <i class="fas fa-arrow-up"></i>
+                                </button>
+                                <!--Descending-->
+                                <button
+                                    class="order-btn"
+                                    :class=" { active: sortOrder === 'desc'}"
+                                    @click="setSortOrder('desc')">
+                                    Descending
+                                    <i class="fas fa-arrow-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!--Lessons grid-->
+                    <div class="lesson-grid">
+                        <div v-for="lesson in displayedLessons" :key="lesson.id" class="lesson-card">
+                            <div class="lesson-icon">
+                                <i :class="getSubjectIcon(lesson.subject)"></i>
+                            </div>
+                            <div class="lesson-content">
+                                <h3 class="lesson-subject">{{lesson.subject}}</h3>
+                                <p class="lesson-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{lesson.location}}
+                                </p>
+                                <p class="lesson-price">$ {{lesson.price}}</p>
+                                <p class="lesson-spaces" :class="{low: lesson.spaces < 3}">
+                                    {{lesson.spaces}} spaces left
+                                </p>
+
+                                <!--Quantity selector-->
+                                <div class="quantity-controls" v-if="lessons.spaces > 0">
+                                    
+                                </div> 
+                            </div>
+
                         </div>
                     </div>
                 </div>
