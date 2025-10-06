@@ -34,11 +34,11 @@
                                 <i class="fas fa-user"></i>
                                 My Profile
                             </div>
-                        </div>
-                        <!--Logout-->
-                        <div class="menu-item" @click="logout">
-                            <i class="fas fa-sign-out-alt"></i>
-                            Logout
+                            <!--Logout-->
+                            <div class="menu-item" @click="logout">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -48,96 +48,137 @@
         <!--Navigation-->
         <nav class="navbar">
             <div class="container">
+                <!--navigation bar-->
                 <div class="nav-links">
                     <a href="#" class="nav-link" :class="{ active: currentPage === 'lessons'}" @click="showLessonsPage">
                         <i class="fas fa-book-open"></i>
                         Browse Lessons
                     </a>
                     <a href="#" class="nav-link" :class="{ active: currentPage === 'cart'}" @click="showCartPage">
-                        <i class="fas fa-bshopping-cart"></i>
-                        Shopping Cart ({{totalCartItems}})
+                        <i class="fas fa-shopping-cart"></i>
+                        Shopping cart ({{totalCartItems}})
                     </a>
                 </div>
-                <!--SearchBox-->
+                <!--Serach box-->
                 <div class="search-box">
                     <input
                         type="text"
                         v-model="searchQuery"
                         @input="handleSearch"
-                        placeholder="Search lessons...(type to search)"
+                        placeholder="Search lessons(type to search)"
                         class="search-input">
-                    <i class="fas fa-search"></i>    
+                    <i class="fas fa-search search-icon"></i>
                 </div>
             </div>
         </nav>
-
         <!--Main content-->
-        <main class="main-content">
+        <div class="main-content">
             <div class="container">
-                <!--Lessons Page-->
+                <!--Lessons page-->
                 <div v-if="currentPage === 'lessons'" class="page-content">
-                    <!--Sort controls-->
+                    <!--Sort Controls-->
                     <div class="sort-controls">
-                        <div class="sort-group">
-                            <label>Sort by:</label>
-                            <select v-model="sortBy" @change="sortLessons" class="sort-select">
-                                <option value="subject">Subject</option>
-                                <option value="location">Location</option>
-                                <option value="price">Price</option>
-                                <option value="spaces">Availabilty</option>
-                            </select>
-                        </div>
-                        <!--sort-->
-                        <div class="sort-group">
-                            <label>Order:</label>
-                            <div class="order-buttons">
-                                <!--Ascending-->
-                                <button
-                                    class="order-btn"
-                                    :class=" { active: sortOrder === 'asc'}"
-                                    @click="setSortOrder('asc')">
-                                    Ascending
-                                    <i class="fas fa-arrow-up"></i>
-                                </button>
-                                <!--Descending-->
-                                <button
-                                    class="order-btn"
-                                    :class=" { active: sortOrder === 'desc'}"
-                                    @click="setSortOrder('desc')">
-                                    Descending
-                                    <i class="fas fa-arrow-down"></i>
-                                </button>
-                            </div>
-                        </div>
+                        <label>Sort by:</label>
+                        <select v-model="sortBy" @change="sortLessons" class="sort-select">
+                            <option value="subject">Subject</option>
+                            <option value="location">Location</option>
+                            <option value="price">Price</option>
+                            <option value="spaces">Spaces</option>
+                        </select>
                     </div>
-                    <!--Lessons grid-->
-                    <div class="lesson-grid">
-                        <div v-for="lesson in displayedLessons" :key="lesson.id" class="lesson-card">
-                            <div class="lesson-icon">
-                                <i :class="getSubjectIcon(lesson.subject)"></i>
-                            </div>
-                            <div class="lesson-content">
-                                <h3 class="lesson-subject">{{lesson.subject}}</h3>
-                                <p class="lesson-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    {{lesson.location}}
-                                </p>
-                                <p class="lesson-price">$ {{lesson.price}}</p>
-                                <p class="lesson-spaces" :class="{low: lesson.spaces < 3}">
-                                    {{lesson.spaces}} spaces left
-                                </p>
-
-                                <!--Quantity selector-->
-                                <div class="quantity-controls" v-if="lessons.spaces > 0">
-                                    
-                                </div> 
-                            </div>
-
+                    <!--Sort order-->
+                    <div class="sort-group">
+                        <label>Order:</label>
+                        <div class="order-buttons">
+                            <!--Ascending-->
+                            <button
+                                class="order-btn"
+                                :class="{ active: sortOrder === 'asc'}"
+                                @click="setSortOrder('asc')">
+                                Ascending 
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                            <!--Descending-->
+                            <button
+                                class="order-btn"
+                                :class="{ active: sortOrder === 'desc'}"
+                                @click="setSortOrder('desc')">
+                                Ascending 
+                                <i class="fas fa-arrow-down"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
+                <!--Lessons grid-->
+                <div v-for="lesson in displayedLessons" :key="lesson.id" class="lesson-card">
+                    <!--Icon-->
+                    <div class="lesson-icon">
+                        <i :class="getSubjectIcon(lesson.subject)"></i>
+                    </div>
+                    <!--lesson information-->
+                    <div class="lesson-content">
+                        <h3 class="lesson-subject">{{ lesson.subject }}</h3>
+                        <p class="lesson-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{lesson.location}}
+                        </p>
+                        <p class="lesson-price">$ {{lesson.price}}</p>
+                        <p class="lesson-spaces" :class="{ low: lesson.spaces < 3 }">
+                            {{lesson.spaces}} spaces left
+                        </p>
+
+                        <!--Quantity selector-->
+                        <div class="quantity-controls" v-if="lesson.spaces > 0">
+                            <label>Quantity:</label>
+                            <div class="quantity-selector">
+                                <!--decrease quantity-->
+                                <button
+                                    class="qty-btn"
+                                    @click="decreaseQuantity(lesson)"
+                                    :disabled="getSelectedQuantity(lesson.id) <= 0">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="qty-display">{{ getSelectedQuantity(lesson.id)}}</span>
+                                <button
+                                    class="qty-btn"
+                                    @click="increaseQuantity(lesson)"
+                                    :disabled="getSelectedQuantity(lesson.id) >= lesson.spaces">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!--add to cart button-->
+                        <button
+                            class="add-to-cart-btn"
+                            :disabled="lesson.spaces === 0 || getSelectedQuantity(lesson.id) === 0"
+                            :class="{ disabled: lesson.spaces === 0 || getSelectedQuantity(lesson.id) === 0}"
+                            @click="addToCart(lesson)">
+                            <span v-if="lesson.spaces > 0 && getSelectedQuantity(lesson.id) > 0 ">
+                                <i class="fas fa-cart-plus"></i>
+                                Add to Cart ({{getSelectedQuantity(lesson.id)}})
+                            </span>
+                            <span v-else-if="lesson.spaces > 0">
+                                <i class="fas fa-cart-plus"></i>
+                                Add to cart
+                            </span>
+                            <span v-else>
+                                <i class="fas fa-times"></i>
+                                Sold out
+                            </span>
+                        </button>
+                    </div>
+                </div>
             </div>
-        </main>
+        </div>
+
+        <!--Shopping cart Page-->
+        <div v-else-if="currentPage === 'cart'" class="page-content">
+            <div class="cart-header">
+                <h2><i class="fas fa-shopping-cart"></i> Shopping Cart</h2>
+                <button class="back-btn" @click="showLessonsPage">
+                    <i
+                </button>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+       
