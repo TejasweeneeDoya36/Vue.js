@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Lesson Lounge</title>
+    <!--link to css file-->
+    <link rel="stylesheet" href="https:cdnjs.cloudfare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="mainPageCSS.css">
+</head>
+<body>
+    <div id="mainPage">
+        <!--Header with theme toggle and profile-->
+        <header class="header">
+            <div class="container">
+                <h1>The Lesson Lounge</h1>
+                <div class="header-controls">
+                    <!--change theme-->
+                    <div class="theme-toggle">
+                        <span>Theme:</span>
+                        <button class="theme-btn" @click="changeTheme('default')">Default</button>
+                        <button class="theme-btn" @click="changeTheme('dark')">Dark</button>
+                    </div>
+                    <div class="profile-section">
+                        <!--profile-->
+                        <div class="profile-icon" @click="toggleProfileMenu">
+                            <i class="fas fa-user-circle"></i>
+                            <span class="profile-name">Welcome User!</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <!--view profile-->
+                        <div v-if="showProfileMenu" class="profile-menu">
+                            <div class="menu-item" @click="viewProfile">
+                                <i class="fas fa-user"></i>
+                                My Profile
+                            </div>
+                        </div>
+                        <!--Logout-->
+                        <div class="menu-item" @click="logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!--Navigation-->
+        <nav class="navbar">
+            <div class="container">
+                <div class="nav-links">
+                    <a href="#" class="nav-link" :class="{ active: currentPage === 'lessons'}" @click="showLessonsPage">
+                        <i class="fas fa-book-open"></i>
+                        Browse Lessons
+                    </a>
+                    <a href="#" class="nav-link" :class="{ active: currentPage === 'cart'}" @click="showCartPage">
+                        <i class="fas fa-bshopping-cart"></i>
+                        Shopping Cart ({{totalCartItems}})
+                    </a>
+                </div>
+                <!--SearchBox-->
+                <div class="search-box">
+                    <input
+                        type="text"
+                        v-model="searchQuery"
+                        @input="handleSearch"
+                        placeholder="Search lessons...(type to search)"
+                        class="search-input">
+                    <i class="fas fa-search"></i>    
+                </div>
+            </div>
+        </nav>
+
+        <!--Main content-->
+        <main class="main-content">
+            <div class="container">
+                <!--Lessons Page-->
+                <div v-if="currentPage === 'lessons'" class="page-content">
+                    <!--Sort controls-->
+                    <div class="sort-controls">
+                        <div class="sort-group">
+                            <label>Sort by:</label>
+                            <select v-model="sortBy" @change="sortLessons" class="sort-select">
+                                <option value="subject">Subject</option>
+                                <option value="location">Location</option>
+                                <option value="price">Price</option>
+                                <option value="spaces">Availabilty</option>
+                            </select>
+                        </div>
+                        <!--sort-->
+                        <div class="sort-group">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
