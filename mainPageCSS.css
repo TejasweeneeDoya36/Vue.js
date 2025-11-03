@@ -1,0 +1,50 @@
+/*reset default browser settings*/
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/*light mode*/
+:root{
+    /*global variables*/
+    --primary-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100% );
+    --primary-color: #2575fc;
+    --secondary-color: #6a11cb;
+    --text-color:#333;
+    --bg-color:#ffffff;
+    --card-bg:#f8f9fa;
+    --border-color:#e0e0e0;
+    --sucess-color:#2ed573;
+    --error-color:#ff4757;
+    --warning-color: #ffa502;
+
+}
+
+/*dark mode*/
+[data-theme="dark"]{
+     --primary-gradient: linear-gradient(135deg, #8a2be2 0%, #4b6cb7 100% );
+    --primary-color: #4b6cb7;
+    --secondary-color: #8a2be2;
+    --text-color:#333;
+    --bg-color:#1a1a1a;
+    --card-bg:#2d2d2d;
+    --border-color:#404040;
+}
+
+/*applies theme colors and smooth transitions for theme switching*/
+body{
+    background: var(--bg-color);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+/*Layout container*/
+.container{
+    max-width: 1200px;
+    margin: 0;
+    padding: 0 20px;
+}
+
+/*Header*/
