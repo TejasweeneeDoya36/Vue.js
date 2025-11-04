@@ -1,3 +1,5 @@
+const { emit } = require("process");
+
 new Vue({
     el:'#app',
     data:{
@@ -249,32 +251,50 @@ new Vue({
         },
 
         //handle signup form submission
-        signup:function(){
+        signup: async function(){
             if (this.validateSignup()){
                 this.isLoading= true;
+                try{
+                    //send data to backend signup route
+                    const response = await fetch ("http://localhost:3000/signup",{
+                        method: "POST",
+                        headers:{"Content-Type":"application/json"},
+                        body: JSON.stringify({
+                            name: this.signupForm.name,
+                            email:this.signupForm.email,
+                            password: this.signupForm.password
+                        })
+                    });
 
-                setTimeout(()=>{
-                    this.isLoading= false;
-                    this.showMessage(`Signup successful!, Welcome ${this.signupForm.name}`,"success");
+                    const result = await response.json();
 
-                    //update user count
-                    this.userCount++;
+                    if (response.ok){
+                        //if sign up is successful
+                        this.showMessage(`Signup successful! Welcome ${this.signupForm.name}`,"success");
+                        this.userCount++; // increase the number of user
 
-                    //reset form
-                    this.signupForm={
-                        name:'',
-                        email:'',
-                        password:'',
-                        confirmPassword:''
-                    };
+                        //reset form
+                        this.signupForm={
+                            name:"",
+                            email:"",
+                            password:"",
+                            confirmPassword:""
+                        };
 
-                    //switch to tab login
-                    setTimeout(()=>{
-                        this.switchTab('login');
-                    },3000);
-                },1500);
+                        //switch to login tab
+                        setTimeout(()=>{
+                            this.switchTab("login");
+                        });
+                    }else{
+                        this.showMessage(result.message || "Signup failed. Try again", "error");
+                    }
+                }catch(error){
+                    this.isLoading=false;
+                    console.error("Signup error:",error);
+                    this.showMessage("Network error.Please try again","error");
+                }
             }else{
-                this.showMessage("Please fix the errors above","error");
+                this.showMessage("Fix the errors")
             }
         },
 
