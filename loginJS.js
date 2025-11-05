@@ -1,3 +1,4 @@
+const { response } = require("express");
 const { emit } = require("process");
 
 new Vue({
@@ -233,20 +234,37 @@ new Vue({
         },
 
         //handle login form submission
-        login:function(){
+        login: async function(){
             if (this.validateLogin()){
                 this.isLoading= true;
+                try{
+                    const data = await fetch ("http://localhost:3000/login",{
+                        method:"POST",
+                        headers:{"Content-Type":"application/json"},
+                        body: JSON.stringify({
+                            email:this.loginForm.email,
+                            password: this.loginForm.password
+                        })
+                    });
 
-                setTimeout(()=>{
-                    this.isLoading= false;
-                    this.showMessage("Login successful","success");
+                    const result = await response.json();
+                    this.isLoading=false;
 
-                    //reset form
-                    this.loginForm.email='';
-                    this.loginForm.password='';
-                },1500);
-            }else{
-                this.showMessage("Please fix the errors above","error");
+                    //if login is successful
+                    if (result.success){
+                        this.showMessage(`Welcome back, ${result.user.name}`,"success");
+                        this.loginForm.password="";
+                        //redirect user to main page
+                        setTimeout(()=>{
+                            window.location.href="../Vue.js/mainPage.html";
+                        });
+                    }else{
+                        this.showMessage(data.message || "Login failed");
+                    }
+                }  catch(err){
+                    console.error("Login error:",err);
+                    this.showMessage("Network error. Please try again");
+                }
             }
         },
 
