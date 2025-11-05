@@ -16,7 +16,7 @@
     --bg-color:#ffffff;
     --card-bg:#f8f9fa;
     --border-color:#e0e0e0;
-    --sucess-color:#2ed573;
+    --success-color:#2ed573;
     --error-color:#ff4757;
     --warning-color: #ffa502;
 
@@ -326,3 +326,89 @@ body{
 .btn .bi, .nav-link .bi, .menu-item .bi {
     margin-right: 0.5rem;
 }
+
+/*adjustments for quantity buttons*/
+.qty-btn .bi{
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/*Cart icon styling*/
+.cart-badge{
+    background: var(--error-color);
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.7rem;
+    margin-left: 5px;
+}
+
+/*empty cart icon*/
+.empty-cart .bi{
+    font-size: 4rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+/*success icon*/
+.success-icon{
+    font-size: 3rem;
+    color: var(--success-color);
+    margin-bottom: 1rem;
+}
+
+/*Lesson grid layout*/
+.lessons-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(320px,1fr));
+    gap:25px
+}
+
+/*styling individual card component which displays lesson information*/
+.lesson-card{
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.lesson-card:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+/*Lesson icon style*/
+.lesson-icon{
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/*text styling for lesson cards*/
+.lesson-content h3{
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.lesson-content p{
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lesson-price{
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.lesson-spaces.low{
+    color: var(--warning-color);
+    font-weight: bold;
+}
+
