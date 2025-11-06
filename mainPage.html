@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Lesson Lounge</title>
-    <!--link to css file-->
-    <link rel="stylesheet" href="https:cdnjs.cloudfare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="mainPageCSS.css">
 </head>
 <body>
@@ -14,6 +16,7 @@
         <header class="header">
             <div class="container">
                 <h1>The Lesson Lounge</h1>
+                <!--theme toggle and profile dropdown-->
                 <div class="header-controls">
                     <!--change theme-->
                     <div class="theme-toggle">
@@ -59,7 +62,7 @@
                         Shopping cart ({{totalCartItems}})
                     </a>
                 </div>
-                <!--Serach box-->
+                <!--Search box-->
                 <div class="search-box">
                     <input
                         type="text"
@@ -72,102 +75,98 @@
             </div>
         </nav>
         <!--Main content-->
-        <main class="main-content">
-            <div class="main-content">
-                <div class="container">
-                    <!--Lessons page-->
-                    <div v-if="currentPage === 'lessons'" class="page-content">
-                        <!--Sort Controls-->
-                        <div class="sort-controls">
-                            <label>Sort by:</label>
-                            <select v-model="sortBy" @change="sortLessons" class="sort-select">
-                                <option value="subject">Subject</option>
-                                <option value="location">Location</option>
-                                <option value="price">Price</option>
-                                <option value="spaces">Spaces</option>
-                            </select>
-                        </div>
-                        <!--Sort order-->
-                        <div class="sort-group">
-                            <label>Order:</label>
-                            <div class="order-buttons">
-                                <!--Ascending-->
-                                <button
-                                    class="order-btn"
-                                    :class="{ active: sortOrder === 'asc'}"
-                                    @click="setSortOrder('asc')">
-                                    Ascending 
-                                    <i class="fas fa-arrow-up"></i>
-                                </button>
-                                <!--Descending-->
-                                <button
-                                    class="order-btn"
-                                    :class="{ active: sortOrder === 'desc'}"
-                                    @click="setSortOrder('desc')">
-                                    Ascending 
-                                    <i class="fas fa-arrow-down"></i>
-                                </button>
-                            </div>
-                        </div>
+        <main class="main-content"></main>
+            <div class="container">
+                <!--Lessons page-->
+                <div v-if="currentPage === 'lessons'" class="page-content">
+                    <!--Sort Controls-->
+                    <div class="sort-controls">
+                        <label>Sort by:</label>
+                        <select v-model="sortBy" @change="sortLessons" class="sort-select">
+                            <option value="subject">Subject</option>
+                            <option value="location">Location</option>
+                            <option value="price">Price</option>
+                            <option value="spaces">Spaces</option>
+                        </select>
                     </div>
-                    <!--Lessons grid-->
-                    <div v-for="lesson in displayedLessons" :key="lesson.id" class="lesson-card">
-                        <!--Icon-->
-                        <div class="lesson-icon">
-                            <i :class="getSubjectIcon(lesson.subject)"></i>
-                        </div>
-                        <!--lesson information-->
-                        <div class="lesson-content">
-                            <h3 class="lesson-subject">{{ lesson.subject }}</h3>
-                            <p class="lesson-location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                {{lesson.location}}
-                            </p>
-                            <p class="lesson-price">$ {{lesson.price}}</p>
-                            <p class="lesson-spaces" :class="{ low: lesson.spaces < 3 }">
-                                {{lesson.spaces}} spaces left
-                            </p>
-
-                            <!--Quantity selector-->
-                            <div class="quantity-controls" v-if="lesson.spaces > 0">
-                                <label>Quantity:</label>
-                                <div class="quantity-selector">
-                                    <!--decrease quantity-->
-                                    <button
-                                        class="qty-btn"
-                                        @click="decreaseQuantity(lesson)"
-                                        :disabled="getSelectedQuantity(lesson.id) <= 0">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <span class="qty-display">{{ getSelectedQuantity(lesson.id)}}</span>
-                                    <button
-                                        class="qty-btn"
-                                        @click="increaseQuantity(lesson)"
-                                        :disabled="getSelectedQuantity(lesson.id) >= lesson.spaces">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <!--add to cart button-->
+                    <!--Sort order-->
+                    <div class="sort-group">
+                        <label>Order:</label>
+                        <div class="order-buttons">
+                            <!--Ascending-->
                             <button
-                                class="add-to-cart-btn"
-                                :disabled="lesson.spaces === 0 || getSelectedQuantity(lesson.id) === 0"
-                                :class="{ disabled: lesson.spaces === 0 || getSelectedQuantity(lesson.id) === 0}"
-                                @click="addToCart(lesson)">
-                                <span v-if="lesson.spaces > 0 && getSelectedQuantity(lesson.id) > 0 ">
-                                    <i class="fas fa-cart-plus"></i>
-                                    Add to Cart ({{getSelectedQuantity(lesson.id)}})
-                                </span>
-                                <span v-else-if="lesson.spaces > 0">
-                                    <i class="fas fa-cart-plus"></i>
-                                    Add to cart
-                                </span>
-                                <span v-else>
-                                    <i class="fas fa-times"></i>
-                                    Sold out
-                                </span>
+                                class="order-btn"
+                                :class="{ active: sortOrder === 'asc'}"
+                                @click="setSortOrder('asc')">
+                                Ascending 
+                                <i class="fas fa-arrow-up"></i>
+                            </button>
+                            <!--Descending-->
+                            <button
+                                class="order-btn"
+                                :class="{ active: sortOrder === 'desc'}"
+                                @click="setSortOrder('desc')">
+                                Ascending 
+                                <i class="fas fa-arrow-down"></i>
                             </button>
                         </div>
+                    </div>
+                </div>
+
+                <!--Lessons grid-->
+                <div v-for="lesson in displayedLessons" :key="lesson.id" class="lesson-card">
+                    <!--Icon-->
+                    <div class="lesson-icon">
+                        <i :class="getSubjectIcon(lesson.subject)"></i>
+                    </div>
+                    <!--lesson information-->
+                    <div class="lesson-content">
+                        <h3 class="lesson-subject">{{ lesson.subject }}</h3>
+                        <p class="lesson-location">
+                            <i class="fas fa-map-marker-alt"></i>{{lesson.location}}
+                        </p>
+                        <p class="lesson-price">$ {{lesson.price}}</p>
+                        <p class="lesson-spaces" :class="{ low: lesson.spaces < 3 }">
+                            {{lesson.spaces}} spaces left
+                        </p>
+
+                        <!--Quantity selector-->
+                        <div class="quantity-controls" v-if="lesson.spaces > 0">
+                            <label>Quantity:</label>
+                            <div class="quantity-selector">
+                                <!--decrease quantity-->
+                                <button
+                                    class="qty-btn"
+                                    @click="decreaseQuantity(lesson)"
+                                    :disabled="getSelectedQuantity(lesson.id) <= 0">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="qty-display">{{ getSelectedQuantity(lesson.id)}}</span>
+                                <button
+                                    class="qty-btn"
+                                    @click="increaseQuantity(lesson)"
+                                    :disabled="getSelectedQuantity(lesson.id) >= lesson.spaces">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!--add to cart button-->
+                        <button
+                            class="add-to-cart-btn"
+                            :disabled="lesson.spaces === 0 || getSelectedQuantity(lesson.id) === 0"
+                            :class="{ disabled: lesson.spaces === 0 || getSelectedQuantity(lesson.id) === 0}"
+                            @click="addToCart(lesson)">
+                            <span v-if="lesson.spaces > 0 && getSelectedQuantity(lesson.id) > 0 ">
+                                <i class="fas fa-cart-plus"></i>
+                                Add to Cart ({{getSelectedQuantity(lesson.id)}})
+                            </span>
+                            <span v-else-if="lesson.spaces > 0">
+                                <i class="fas fa-cart-plus"></i>Add to cart
+                            </span>
+                            <span v-else>
+                                <i class="fas fa-times"></i>Sold out
+                            </span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -199,94 +198,132 @@
                         <div v-for="item in cartItems" :key="item.id" class="cart-item">
                             <!--Item details-->
                             <div class="item-info">
-                                <img src="getSubjectImage(item.subject)" :alt="item.subject + 'icon'" class="subject-image">
-                            </div>
-                            <div class="item-details">
+                                <div class="item-icon">
+                                    <img :src="getSubjectImage(item.subject)" :alt="item.subject + 'icon'" class="subject-image">
+                                </div>
+                                <div class="item-details">
                                 <h4>{{item.subject}}</h4>
                                 <p class="item-location"><i class="bi bi-geo-alt"></i>{{item.location}}</p>
                                 <p class="item-price"><i class="bi bi-currency-pound"></i>{{item.price}} each</p>
+                                </div>
+                            </div>
+                            
+                        <!--quantity & total price & remove button-->
+                        <div class="item-controls">
+                            <div class="cart-quantity">
+                                <!--Decrease quantity of spaces-->
+                                <button class="qty-btn" @click="decreaseCartQuantity(item.id)">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                                <span class="qty-display">{{item.quantity}}</span>
+                                <!--Increase quantity of spaces-->
+                                <button class="qty-btn" @click="increaseCartQuantity(item.id)" :disabled="item.quantity >= getLessonSpaces(item.id)">
+                                    <i class="bi bi-plus"></i>
+                             </button>
+                            </div>
+                            <!--output total price-->
+                            <p class="item-total">Total: £{{item.price * item.quantity}}</p>
+                            <button class="remove-btn" @click="removeFromCart(item.id)">
+                                <i class="bi bi-trash"></i>Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!--checkout section-->
+                <div class="checkout-section">
+                    <div class="oder-summary">
+                        <h3><i class="bi bi-receipt"></i>Order Summary</h3>
+                        <div class="summary-details">
+                            <div class="summary-row">
+                                <span>Items:</span>
+                                <span>{{totalCartItems}}</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span>£{{totalPrice}}</span>
+                            </div>
+                            <div class="summary-row total">
+                                <span><strong>Total:</strong></span>
+                                <span><strong>£{{totalPrice}}</strong></span>
                             </div>
                         </div>
                     </div>
+                    <!--checkout form-->
+                    <form @submit.prevent="handleCheckout" class="checkout-form">
+                        <h3><i class="bi bi-credit-card"></i>Checkout Information</h3>
 
-                    <!--quantity & total price & remove button-->
-                    <div class="item-controls">
-                        <div class="cart-quantity">
-                            <!--Decrease quantity of spaces-->
-                            <button class="qty-btn" @click="decreaseCartQuantity(item.id)">
-                                <i class="bi bi-dash"></i>
-                            </button>
-                            <span class="qty-display">{{item.quantity}}</span>
-                            <!--Increase quantity of spaces-->
-                            <button class="qty-btn" @click="increaseCartQuantity(item.id)" :disabled="item.quantity >= getLessonSpaces(item.id)">
-                                <i class="bi bi-plus"></i>
-                            </button>
+                        <!--name field-->
+                        <div class="form-group">
+                            <label for="name">Full name:</label>
+                            <input
+                                type="text"
+                                id="name"
+                                v-model="checkoutForm.name"
+                                @input="validateForm"
+                                placeholder="Enter full name"
+                                class="form-input"
+                                :class="{error: formErrors.name}">
+                            <span v-if="formErrors.name" class="error-message">{{formErrors.name}}</span>    
                         </div>
-                        <!--output total price-->
-                        <p class="item-total">Total: £{{item.price * item.quantity}}</p>
-                        <button class="remove-btn" @click="removeFromCart(item.id)">
-                            <i class="bi bi-trash"></i>Remove
-                        </button>
-                    </div>
+
+                        <!--phone number field-->
+                        <div class="form-group">
+                            <label for="phone">Phone number</label>
+                            <input
+                                type="text"
+                                id="phone"
+                                v-model="checkoutForm.phone"
+                                @input="validateForm"
+                                placeholder="Enter your phone number"
+                                class="form-input"
+                                :class="{error: formErrors.phone}">
+                                <span v-if="formErrors.phone" class="error-message">{{formErrors.phone}}</span>  
+                        </div>
+                            <!--submit button-->
+                            <button
+                                type="submit"
+                                class="checkout-btn"
+                                :disabled="!isFormValid">
+                                <i class="bi bi-lock"></i> Complete checkout - > £{{totalPrice}}
+                            </button>    
+                            </form>
+                        </div>    
+                    </div>    
                 </div>
-            </div>
-            <!--checkout section-->
-            <div class="checkout-section">
-                <div class="oder-summary">
-                    <h3><i class="bi bi-receipt"></i>Order Summary</h3>
-                    <div class="summary-details">
-                        <div class="summary-row">
-                            <span>Items:</span>
-                            <span>{{totalCartItems}}</span>
-                            <span>Subtotal:</span>
-                            <span>£{{totalPrice}}</span>
-                        </div>
-                        <div class="summary-row total">
-                            <span><strong>Total:</strong></span>
-                            <span><strong>£{{totalPrice}}</strong></span>
-                        </div>
-                    </div>
-                </div>
-                <!--checkout form-->
-                <form @submit.prevent="handleCheckout" class="checkout-form">
-                    <h3><i class="bi bi-credit-card"></i>Checkout Information</h3>
-
-                    <!--name field-->
-                    <div class="form-group">
-                        <label for="name">Full name:</label>
-                        <input
-                            type="text"
-                            id="name"
-                            v-model="checkoutForm.name"
-                            @input="validateForm"
-                            placeholder="Enter full name"
-                            class="form-input"
-                            :class="{error: formErrors.name}">
-                        <span v-if="formErrors.name" class="error-message">{{formErrors.name}}</span>    
-                    </div>
-
-                    <!--phone number field-->
-                    <div class="form-group">
-                        <label for="phone">Phone number</label>
-                        <input
-                            type="text"
-                            id="phone"
-                            v-model="checkoutForm.phone"
-                            @input="validateForm"
-                            placeholder="Enter your phone number"
-                            class="form-input"
-                            :class="{error: formErrors.phone}">
-                    </div>
-                    <!--submit button-->
-                    <button
-                        type="submit"
-                        class="checkout-btn"
-                        :disabled="!isFormValid">
-                        <i class="bi bi-lock"></i> Complete checkout - > £{{totalPrice}}
-                    </button>    
-                </form>
             </div>
         </main>
-    </div>
+
+        <!--Order confirmation-->
+        <div v-if="showConfirmation" class="model-overlay">
+            <div class="modal-content">
+                <!--close button-->
+                <h3><i class="bi bi-check-circle"></i>Order confirmed!</h3>
+                <button @click="showConfirmation = false" class="close-btn">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <!--confirmation details-->
+            <div class="modal-body">
+                <i class="bi bi-check-circle success-icon"></i>
+                <p>Thank you, {{checkoutForm.name}}! Your order has been submitted successfully</p>
+                <p>We'll contact you at {{checkoutForm.phone}} for confirmation</p>
+                <div class="order-deatils">
+                    <h4> Order details:</h4>
+                    <p><i class="bi bi-box"></i>Total items: {{totalCartItems}}</p>
+                    <p><i class="bi bi-currency-pound"></i>Total Amount: £{{totalPrice}} </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button @click="continueShopping" class="continue-btn">
+                    <i class="bi bi-bag"></i>Continue shopping
+                </button>
+            </div>
+        </div>
+    </div>    
+
+    <!--link to js file-->
+    <script src="htpps://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.js"></script>
+    <script src="mainPageJS.js"></script>
 </body>
 </html>       
