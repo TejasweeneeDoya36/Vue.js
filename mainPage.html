@@ -72,122 +72,221 @@
             </div>
         </nav>
         <!--Main content-->
-        <div class="main-content">
-            <div class="container">
-                <!--Lessons page-->
-                <div v-if="currentPage === 'lessons'" class="page-content">
-                    <!--Sort Controls-->
-                    <div class="sort-controls">
-                        <label>Sort by:</label>
-                        <select v-model="sortBy" @change="sortLessons" class="sort-select">
-                            <option value="subject">Subject</option>
-                            <option value="location">Location</option>
-                            <option value="price">Price</option>
-                            <option value="spaces">Spaces</option>
-                        </select>
+        <main class="main-content">
+            <div class="main-content">
+                <div class="container">
+                    <!--Lessons page-->
+                    <div v-if="currentPage === 'lessons'" class="page-content">
+                        <!--Sort Controls-->
+                        <div class="sort-controls">
+                            <label>Sort by:</label>
+                            <select v-model="sortBy" @change="sortLessons" class="sort-select">
+                                <option value="subject">Subject</option>
+                                <option value="location">Location</option>
+                                <option value="price">Price</option>
+                                <option value="spaces">Spaces</option>
+                            </select>
+                        </div>
+                        <!--Sort order-->
+                        <div class="sort-group">
+                            <label>Order:</label>
+                            <div class="order-buttons">
+                                <!--Ascending-->
+                                <button
+                                    class="order-btn"
+                                    :class="{ active: sortOrder === 'asc'}"
+                                    @click="setSortOrder('asc')">
+                                    Ascending 
+                                    <i class="fas fa-arrow-up"></i>
+                                </button>
+                                <!--Descending-->
+                                <button
+                                    class="order-btn"
+                                    :class="{ active: sortOrder === 'desc'}"
+                                    @click="setSortOrder('desc')">
+                                    Ascending 
+                                    <i class="fas fa-arrow-down"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <!--Sort order-->
-                    <div class="sort-group">
-                        <label>Order:</label>
-                        <div class="order-buttons">
-                            <!--Ascending-->
+                    <!--Lessons grid-->
+                    <div v-for="lesson in displayedLessons" :key="lesson.id" class="lesson-card">
+                        <!--Icon-->
+                        <div class="lesson-icon">
+                            <i :class="getSubjectIcon(lesson.subject)"></i>
+                        </div>
+                        <!--lesson information-->
+                        <div class="lesson-content">
+                            <h3 class="lesson-subject">{{ lesson.subject }}</h3>
+                            <p class="lesson-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                {{lesson.location}}
+                            </p>
+                            <p class="lesson-price">$ {{lesson.price}}</p>
+                            <p class="lesson-spaces" :class="{ low: lesson.spaces < 3 }">
+                                {{lesson.spaces}} spaces left
+                            </p>
+
+                            <!--Quantity selector-->
+                            <div class="quantity-controls" v-if="lesson.spaces > 0">
+                                <label>Quantity:</label>
+                                <div class="quantity-selector">
+                                    <!--decrease quantity-->
+                                    <button
+                                        class="qty-btn"
+                                        @click="decreaseQuantity(lesson)"
+                                        :disabled="getSelectedQuantity(lesson.id) <= 0">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span class="qty-display">{{ getSelectedQuantity(lesson.id)}}</span>
+                                    <button
+                                        class="qty-btn"
+                                        @click="increaseQuantity(lesson)"
+                                        :disabled="getSelectedQuantity(lesson.id) >= lesson.spaces">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!--add to cart button-->
                             <button
-                                class="order-btn"
-                                :class="{ active: sortOrder === 'asc'}"
-                                @click="setSortOrder('asc')">
-                                Ascending 
-                                <i class="fas fa-arrow-up"></i>
-                            </button>
-                            <!--Descending-->
-                            <button
-                                class="order-btn"
-                                :class="{ active: sortOrder === 'desc'}"
-                                @click="setSortOrder('desc')">
-                                Ascending 
-                                <i class="fas fa-arrow-down"></i>
+                                class="add-to-cart-btn"
+                                :disabled="lesson.spaces === 0 || getSelectedQuantity(lesson.id) === 0"
+                                :class="{ disabled: lesson.spaces === 0 || getSelectedQuantity(lesson.id) === 0}"
+                                @click="addToCart(lesson)">
+                                <span v-if="lesson.spaces > 0 && getSelectedQuantity(lesson.id) > 0 ">
+                                    <i class="fas fa-cart-plus"></i>
+                                    Add to Cart ({{getSelectedQuantity(lesson.id)}})
+                                </span>
+                                <span v-else-if="lesson.spaces > 0">
+                                    <i class="fas fa-cart-plus"></i>
+                                    Add to cart
+                                </span>
+                                <span v-else>
+                                    <i class="fas fa-times"></i>
+                                    Sold out
+                                </span>
                             </button>
                         </div>
                     </div>
                 </div>
-                <!--Lessons grid-->
-                <div v-for="lesson in displayedLessons" :key="lesson.id" class="lesson-card">
-                    <!--Icon-->
-                    <div class="lesson-icon">
-                        <i :class="getSubjectIcon(lesson.subject)"></i>
-                    </div>
-                    <!--lesson information-->
-                    <div class="lesson-content">
-                        <h3 class="lesson-subject">{{ lesson.subject }}</h3>
-                        <p class="lesson-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            {{lesson.location}}
-                        </p>
-                        <p class="lesson-price">$ {{lesson.price}}</p>
-                        <p class="lesson-spaces" :class="{ low: lesson.spaces < 3 }">
-                            {{lesson.spaces}} spaces left
-                        </p>
+            </div>
 
-                        <!--Quantity selector-->
-                        <div class="quantity-controls" v-if="lesson.spaces > 0">
-                            <label>Quantity:</label>
-                            <div class="quantity-selector">
-                                <!--decrease quantity-->
-                                <button
-                                    class="qty-btn"
-                                    @click="decreaseQuantity(lesson)"
-                                    :disabled="getSelectedQuantity(lesson.id) <= 0">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <span class="qty-display">{{ getSelectedQuantity(lesson.id)}}</span>
-                                <button
-                                    class="qty-btn"
-                                    @click="increaseQuantity(lesson)"
-                                    :disabled="getSelectedQuantity(lesson.id) >= lesson.spaces">
-                                    <i class="fas fa-plus"></i>
-                                </button>
+            <!--Shopping cart Page-->
+            <div v-else-if="currentPage === 'cart'" class="page-content">
+                <div class="cart-header">
+                    <h2><i class="fas fa-shopping-cart"></i> Shopping Cart</h2>
+                    <!--back button-->
+                    <button class="back-btn" @click="showLessonsPage">
+                        <i class="bi bi-arrow-left"></i>Back to Lessons
+                    </button>
+                </div>
+
+                <!--Empty cart message-->
+                <div v-if="cartItems.length === 0" class="empty-cart">
+                    <i class="bi bi-cart-x"></i>
+                    <h3>Your cart is empty</h3>
+                    <p>Browse our lessons and add some to your cart!</p>
+                    <button class="browse-lessons-btn" @click="showLessonsPage">
+                        <i class="bi bi-journal-bookmark"></i>Browse Lessons
+                    </button>
+                </div>
+
+                <!--Cart content (items & checkout form)-->
+                <div v-else class="cart-content">
+                    <!--List of cart items-->
+                    <div class="cart-items">
+                        <div v-for="item in cartItems" :key="item.id" class="cart-item">
+                            <!--Item details-->
+                            <div class="item-info">
+                                <img src="getSubjectImage(item.subject)" :alt="item.subject + 'icon'" class="subject-image">
+                            </div>
+                            <div class="item-details">
+                                <h4>{{item.subject}}</h4>
+                                <p class="item-location"><i class="bi bi-geo-alt"></i>{{item.location}}</p>
+                                <p class="item-price"><i class="bi bi-currency-pound"></i>{{item.price}} each</p>
                             </div>
                         </div>
-                        <!--add to cart button-->
-                        <button
-                            class="add-to-cart-btn"
-                            :disabled="lesson.spaces === 0 || getSelectedQuantity(lesson.id) === 0"
-                            :class="{ disabled: lesson.spaces === 0 || getSelectedQuantity(lesson.id) === 0}"
-                            @click="addToCart(lesson)">
-                            <span v-if="lesson.spaces > 0 && getSelectedQuantity(lesson.id) > 0 ">
-                                <i class="fas fa-cart-plus"></i>
-                                Add to Cart ({{getSelectedQuantity(lesson.id)}})
-                            </span>
-                            <span v-else-if="lesson.spaces > 0">
-                                <i class="fas fa-cart-plus"></i>
-                                Add to cart
-                            </span>
-                            <span v-else>
-                                <i class="fas fa-times"></i>
-                                Sold out
-                            </span>
+                    </div>
+
+                    <!--quantity & total price & remove button-->
+                    <div class="item-controls">
+                        <div class="cart-quantity">
+                            <!--Decrease quantity of spaces-->
+                            <button class="qty-btn" @click="decreaseCartQuantity(item.id)">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                            <span class="qty-display">{{item.quantity}}</span>
+                            <!--Increase quantity of spaces-->
+                            <button class="qty-btn" @click="increaseCartQuantity(item.id)" :disabled="item.quantity >= getLessonSpaces(item.id)">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+                        <!--output total price-->
+                        <p class="item-total">Total: £{{item.price * item.quantity}}</p>
+                        <button class="remove-btn" @click="removeFromCart(item.id)">
+                            <i class="bi bi-trash"></i>Remove
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
+            <!--checkout section-->
+            <div class="checkout-section">
+                <div class="oder-summary">
+                    <h3><i class="bi bi-receipt"></i>Order Summary</h3>
+                    <div class="summary-details">
+                        <div class="summary-row">
+                            <span>Items:</span>
+                            <span>{{totalCartItems}}</span>
+                            <span>Subtotal:</span>
+                            <span>£{{totalPrice}}</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span><strong>Total:</strong></span>
+                            <span><strong>£{{totalPrice}}</strong></span>
+                        </div>
+                    </div>
+                </div>
+                <!--checkout form-->
+                <form @submit.prevent="handleCheckout" class="checkout-form">
+                    <h3><i class="bi bi-credit-card"></i>Checkout Information</h3>
 
-        <!--Shopping cart Page-->
-        <div v-else-if="currentPage === 'cart'" class="page-content">
-            <div class="cart-header">
-                <h2><i class="fas fa-shopping-cart"></i> Shopping Cart</h2>
-                <!--back button-->
-                <button class="back-btn" @click="showLessonsPage">
-                    <i class="bi bi-arrow-left"></i>Back to Lessons
-                </button>
-            </div>
+                    <!--name field-->
+                    <div class="form-group">
+                        <label for="name">Full name:</label>
+                        <input
+                            type="text"
+                            id="name"
+                            v-model="checkoutForm.name"
+                            @input="validateForm"
+                            placeholder="Enter full name"
+                            class="form-input"
+                            :class="{error: formErrors.name}">
+                        <span v-if="formErrors.name" class="error-message">{{formErrors.name}}</span>    
+                    </div>
 
-            <!--Empty cart message-->
-            <div v-if="cartItems.length === 0" class="empty-cart">
-                <i class="bi bi-cart-x"></i>
-                <h3>Your cart is empty</h3>
-                <p>Browse our lessons and add some to your cart!</p>
-                <button
+                    <!--phone number field-->
+                    <div class="form-group">
+                        <label for="phone">Phone number</label>
+                        <input
+                            type="text"
+                            id="phone"
+                            v-model="checkoutForm.phone"
+                            @input="validateForm"
+                            placeholder="Enter your phone number"
+                            class="form-input"
+                            :class="{error: formErrors.phone}">
+                    </div>
+                    <!--submit button-->
+                    <button
+                        type="submit"
+                        class="checkout-btn"
+                        :disabled="!isFormValid">
+                        <i class="bi bi-lock"></i> Complete checkout - > £{{totalPrice}}
+                    </button>    
+                </form>
             </div>
-        </div>
+        </main>
     </div>
-       
+</body>
+</html>       
