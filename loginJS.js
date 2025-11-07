@@ -1,6 +1,4 @@
-const { response } = require("express");
-const { emit } = require("process");
-
+//manage login and signup
 new Vue({
     el:'#app',
     data:{
@@ -15,57 +13,36 @@ new Vue({
             password:'',
             confirmPassword:''
         },
-        errors:{
-            loginEmail:'',
-            loginPassword:'',
-            signupName:'',
-            signupEmail:'',
-            signupPassword:'',
-            signupConfirm:'',
-        },
+        errors:{},
         message:{
             text:'',
             type:'' //success or error
         },
         isLoading: false,
-        userCount:12548, //to be amended
+        userCount:0,
         showUserCount: true,
         passwordStrength:{
             class:'weak',
             text:'Weak'
         },
+        apiBaseUrl:'', //to be changed
         //array of form validation rules
         validationRules:{
             email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-            password:/^(?=.*[A-Z])(?=.*[0-9])(?=.[!@#$%^&*])(a-zA-Z0-9!@#$%^&*){6,}$/
+            password:/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,}$/
         },
+        passwordCheckTimeout:null
     },
     computed:{
         //to check if login is valid
         isLoginFormValid: function(){
-            return this.loginForm.email && this.loginForm.password && this.loginForm.password.length >=6 && this.isValidEmail(this.loginForm.email);
+            const {email,password} = this.loginForm;
+            return password.length >=6 && this.isValidEmail(email);
         },
         //to check if sign up is valid
         isSignupFormValid: function(){
-            return this.signupForm.email && this.signupForm.password && this.signupForm.confirmPassword && this.loginForm.password.length >=6 && this.loginForm.password === this.signupForm.confirmPassword  && this.isValidEmail(this.loginForm.email);
-        },
-
-        //get form status message
-        formStatus: function(){
-            if (this.activeTab === 'login'){
-                return this.isLoginFormValid ? 'Ready to sign in!' : 'Please complete all fields correctly';
-            }else{
-                return this.isSignupFormValid ? 'Ready to create your account!' : 'Please complete all fields correctly';
-            }
-        },
-
-        //get form status class
-        formStatusClass: function(){
-            if (this.activeTab === 'login'){
-                return this.isLoginFormValid ? 'info' : 'warning';
-            }else{
-                return this.isSignupFormValid ? 'info' : 'warning';
-            }
+            const {email,password,confirmPassword} = this.signupForm;
+            return password.length >=6 && password === confirmPassword  && this.isValidEmail(email) && name.trim().length >=2;
         }
     },
     methods:{
@@ -77,13 +54,7 @@ new Vue({
         },
         //clear all error messages
         clearErrors: function(){
-            for (let error in this.errors){
-                this.errors[error]='';
-            }
-        },
-        //clear specific error field
-        clearError: function(field){
-            this.errors[field]='';
+           this.errors={};
         },
         //clear message
         clearMessage: function(){
@@ -93,74 +64,32 @@ new Vue({
 
         //validate email format
         isValidEmail: function(email){
-            return this.validationRules.email.test(email);
+            return this.validationRules.email.test(email.trim());
         },
 
-        //validate individual field
-        validateField: function(field){
-            switch(field){
-                case 'loginEmail':
-                    if(!this.loginForm.email){
-                        this.errors.loginEmail='Email is required';
-                    } else if (!this.isValidEmail(this.loginForm.email)){
-                        this.errors.loginEmail='Please enter a valid email address';
-                    }
-                    break;
-                case 'loginPassword':
-                    if(!this.loginForm.password){
-                        this.errors.loginPassword='Password is required';
-                    } else if (this.loginForm.password.length < 6){
-                        this.errors.loginEmail='Password must be atleast 6 characters';
-                    }
-                    break; 
-                case 'signupName':
-                    if(!this.signupForm.name){
-                        this.errors.lsignupName='Full name is required';
-                    } else if (this.loginForm.name.length < 2){
-                        this.errors.signupName='Name must be atleast 2 characters';
-                    }
-                    break;    
-                case 'signupEmail':
-                    if(!this.signupForm.email){
-                        this.errors.signupEmail='Email is required';
-                    } else if (!this.isValidEmail(this.signupForm.email)){
-                        this.errors.signupEmail='Please enter a valid email adress';
-                    }
-                    break;
-                case 'signupPassword':
-                    if(!this.signupForm.password){
-                        this.errors.signupPassword='Password is required';
-                    } else if (this.signupForm.password.length < 6){
-                        this.errors.signupPassword='Password must be atleast 6 characters';
-                    }
-                    break;
-                case 'signupConfirm':
-                    if(!this.signupForm.password){
-                        this.errors.confirmPassword='Password is required';
-                    } else if (this.signupForm.password !== this.signupForm.confirmPassword ){
-                        this.errors.signupConfirm='Password do not match';
-                    }
-                    break;    
+        showMessage: function(text,type){
+            this.message.text=text;
+            this.message.type=type;
 
+            //autohide success messages after 5 seconds
+            if (type=== 'success'){
+                setTimeout(()=>{
+                    this.clearMessage();
+                },5000);
             }
         },
-
+        
         //check password strength
         checkPasswordStrength: function(){
-            const password = this.signupForm.password;
-
-            if(!password){
-                this.passwordStrength.class='weak';
-                this.passwordStrength.text='Weak';
-                return;
-            }
-
+            clearTimeout(this.passwordCheckTimeout);
+            const pw = this.signupForm.password;
+           
             let strength=0;
-            if(password.length>=6) strength++;
-            if(password.length>=8) strength++;
-            if(/[A-Z]/.test(password)) strength++;
-            if(/[0-9]/.test(password)) strength++;
-            if(/[^A-Za-z0-9]/.test(password)) strength++;
+            if(pw.length>=6) strength++;
+            if(pw.length>=8) strength++;
+            if(/[A-Z]/.test(pw)) strength++;
+            if(/[0-9]/.test(pw)) strength++;
+            if(/[^A-Za-z0-9]/.test(pw)) strength++;
 
             if (strength <= 2){
                 this.passwordStrength.class='weak';
@@ -176,61 +105,53 @@ new Vue({
 
         // validate login form
         validateLogin: function(){
-            let isValid=true;
+            const {email,password} = this.loginForm;
+            this.clearErrors();
 
-            if(!this.loginForm.email){
+            if(!email){
                 this.errors.loginEmail='Email is required';
-                isValid=false;
-            } else if (!this.isValidEmail(this.loginForm.email)){
+            } else if (!this.isValidEmail(email)){
                 this.errors.loginEmail='Please enter a valid email address';
-                isValid=false;
             }
 
-            if(!this.loginForm.password){
+            if(!password){
                 this.errors.loginPassword='Password is required';
-                isValid=false;
-            } else if (this.loginForm.password.length < 6){
+            } else if (password.length < 6){
                 this.errors.loginEmail='Password must be atleast 6 characters';
-                isValid=false;
+
             }
 
-            return isValid;
+            return Object.keys(this.errors).length === 0;
         },
 
         //validate signup form
         validateSignup: function(){
-            let isValid=true;
+            const {name,email,password,confirmPassword} = this.signupForm;
+            this.clearErrors();
 
-            if(!this.signupForm.name){
+            //check if name is empty
+            if(!name.trim()){
                 this.errors.signupName='Full name is required';
-                isValid=false;
             } 
-
-            if(!this.signupForm.email){
+            //check email
+            if(!email.trim()){
                 this.errors.signupEmail='Email is required';
-                isValid=false;
-            } else if (!this.isValidEmail(this.signupForm.email)){
+            } else if (!this.isValidEmail(email)){
                 this.errors.signupEmail='Please enter a valid email adress';
-                isValid=false;
             }
-
-            if(!this.signupForm.password){
+            //check password
+            if(!password){
                 this.errors.signupPassword='Password is required';
-                isValid=false;
-            } else if (this.signupForm.password.length < 6){
+            } else if (password.length < 6){
                     this.errors.signupPassword='Password must be atleast 6 characters';
-                    isValid=false;
             }
 
-            if(!this.signupForm.confirmPassword){
+            if(!confirmPassword){
                 this.errors.confirmPassword='Please confirm your password';
-                isValid=false;
-            } else if (this.signupForm.password !== this.signupForm.confirmPassword ){
+            } else if (password !== confirmPassword ){
                 this.errors.signupConfirm='Password do not match';
-                isValid=false;
-            
             }
-            return isValid;
+            return Object.keys(this.errors).length === 0;
         },
 
         //handle login form submission
@@ -313,18 +234,6 @@ new Vue({
                 }
             }else{
                 this.showMessage("Fix the errors")
-            }
-        },
-
-        showMessage: function(text,type){
-            this.message.text=text;
-            this.message.type=type;
-
-            //autohide success messages after 5 seconds
-            if (type=== 'success'){
-                setTimeout(()=>{
-                    this.clearMessage();
-                },5000);
             }
         },
 
