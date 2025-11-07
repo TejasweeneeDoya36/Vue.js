@@ -47,7 +47,6 @@
                 </div>
             </div>
         </header>
-
         <!--Navigation-->
         <nav class="navbar">
             <div class="container">
@@ -74,6 +73,7 @@
                 </div>
             </div>
         </nav>
+
         <!--Main content-->
         <main class="main-content"></main>
             <div class="container">
@@ -295,35 +295,39 @@
         </main>
 
         <!--Order confirmation-->
-        <div v-if="showConfirmation" class="model-overlay">
+        <div v-if="showConfirmation" class="modal-overlay">
             <div class="modal-content">
                 <!--close button-->
-                <h3><i class="bi bi-check-circle"></i>Order confirmed!</h3>
-                <button @click="showConfirmation = false" class="close-btn">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
-            <!--confirmation details-->
-            <div class="modal-body">
-                <i class="bi bi-check-circle success-icon"></i>
-                <p>Thank you, {{checkoutForm.name}}! Your order has been submitted successfully</p>
-                <p>We'll contact you at {{checkoutForm.phone}} for confirmation</p>
-                <div class="order-deatils">
-                    <h4> Order details:</h4>
-                    <p><i class="bi bi-box"></i>Total items: {{totalCartItems}}</p>
-                    <p><i class="bi bi-currency-pound"></i>Total Amount: £{{totalPrice}} </p>
+                <div class="modal-header">
+                    <h3><i class="bi bi-check-circle"></i>Order Confirmed</h3>
+                    <button @click="showConfirmation = false" class="close-btn">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+                <!--confirmation details-->
+                <div class="modal-body">
+                    <i class="bi bi-check-circle success-icon"></i>
+                    <p>Thank you,{{checkoutForm.name}} Your order has been submitted successfully</p>
+                    <p>We'll contact you at {{checkoutForm.phone}} to confirm your lessons</p>
+                    <div class="order-details">
+                        <h4>Order details:</h4>
+                        <p><i class="bi bi-box"></i>Total items: {{totalCartItems}}</p>
+                        <p><i class="bi bi-currency-pound"></i>Total items: £{{totalPrice}}</p>
+                    </div>
+                </div>
+                <!--continue shopping button-->
+                <div class="modal-footer">
+                    <button @click="continueShopping" class="continue-btn">
+                        <i class="bi bi-bag"></i>Continue shopping
+                    </button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button @click="continueShopping" class="continue-btn">
-                    <i class="bi bi-bag"></i>Continue shopping
-                </button>
-            </div>
         </div>
-    </div>    
-
+    </div>
+    
     <!--link to js file-->
-    <script src="htpps://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.js"></script>
+    <script src="https://cdn.jsdevlivr.net/npm/bootstrap@5.3.0/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.js"></script>
     <script src="mainPageJS.js"></script>
 </body>
 </html>       
