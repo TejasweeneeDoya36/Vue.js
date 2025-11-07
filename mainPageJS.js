@@ -37,7 +37,18 @@ new Vue({
 
     //computed methods
     computed:{
+        //search lessons
+        displayedLessons:function(){
+            var filtered = this.lessons;
 
+            //filter lessons based on search query
+            if (this.searchQuery.trim()){
+                var query= this.searchQuery.toLowerCase();
+                filtered-filtered.filter(function(lesson){
+                    
+                });
+            }
+        }    
     },
 
     //methods
