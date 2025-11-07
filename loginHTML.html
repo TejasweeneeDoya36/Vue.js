@@ -13,6 +13,7 @@
             <!--Welcome section with conditional content-->
             <div class="welcome-section">
                 <h1>The Lesson Lounge</h1>
+                <!--Conditionally show different welcome text depending on active tab-->
                 <p v-if="activeTab === 'login'">
                     Welcome back! Sign in to continue your learning journey
                 </p>
@@ -27,10 +28,10 @@
                 </div>
             </div>
 
-            <!--form-->
+            <!--forms for login and signup-->
             <div class="form-section">
                 <div class="form-container">
-                    <!--Tab navigation-->
+                    <!--Tab navigation to switch between login and signup-->
                     <div class="tabs">
                         <div class="tab" 
                             :class="{active: activeTab === 'login'}"
@@ -47,8 +48,8 @@
                     <div class="message"
                         :class="{'success-message': message.type === 'success', 'error-message':message.type === 'error'}"
                         v-if="message.text">
-
                         <span v-html="message.text"></span>
+                        <!--close button to clear the message-->
                         <button class="close-btn" v-on:click="clearMessage">&times;</button>
                     </div>
 
@@ -153,7 +154,7 @@
                                 v-model.trim="signupForm.password"
                                 v-on:input="clearError('signupPassword') ; checkPasswordStrength()"
                                 v-on:blur="validateField('signupPassword')"
-                                placeholder="Enter your password"
+                                placeholder="Create your password"
                                 :disabled="isLoading">
                             <span class="error-message" v-if="errors.signupPassword">
                                 {{errors.signupPassword}}
@@ -190,7 +191,7 @@
 
                         <div class="terms">
                             By signing up, you agree to our
-                            <a href="#" v-on:click.prevent="showTerms">Terms of Service</a>
+                            <a href="#" v-on:click.prevent="showTerms">Terms of Service</a> and
                             <a href="#" v-on:click.prevent="showPrivacy">Privacy policy</a>
                         </div>
                     </form>
