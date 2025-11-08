@@ -300,7 +300,37 @@ new Vue({
 
         //backend search
         handleSearch:function(){
-            
+            if(this.searchTimeout){
+                clearTimeout(this.searchTimeout);
+            }
+
+            //debounce user typing
+            this.searchTimeout = setTimeout(async ()=>{
+                try{
+                    const query = this.searchQuery.trim();
+
+                    //fetch from backend search API
+                    const response = await fetch (`http://localhost:3000/api/search?q=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+
+                    if(data.success){
+                        //replace lessons list with search results
+                        this.lessons = data.lessons.map(lesson=>({
+                            id: lesson.id || lesson._id,
+                            subject: lesson.subject,
+                            location: lesson.location,
+                            price: lesson.Price || lesson.price,
+                            spaces: lesson.spaces 
+                        }));
+                        console.log('Search results', this.lessons);
+                    }else{
+                        this.showNotification('Search failed: ' + data.message);
+                    }
+                }catch(error){
+                    console.error('Error performing search:',error);
+                    this.showNotification('Server error while searching');
+                }
+            },300);
         },
 
         //checkout
@@ -322,7 +352,10 @@ new Vue({
 
         //checkout
         handleCheckout: async function() {
-        
+            if (!this.isFormValid){
+                this.showNotification('Please fill out the form correctly','error');
+                return;
+            }
         },
 
         //continue shopping
