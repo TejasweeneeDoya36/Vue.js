@@ -260,7 +260,27 @@ new Vue({
 
         //fetch lessons
         fetchLessons: async function () {
-        
+            try{
+                const response= await fetch('https://localhost:3000/api/lessons');
+                const data = await response.json();
+
+                if ( data.success){
+                    this.lessons = data.lessons.map(lesson => ({
+                        id:lesson.id || lesson._id,
+                        subject: lesson.subject,
+                        location: lesson.location,
+                        price: lesson.Price || lesson.price,
+                    }));
+
+                    console.log('Fetched lessons:', this.lessons);
+                }else{
+                    console.error('Failed to fetch lessons',data.message);
+                    this.showNotification('error fetching lessons');
+                }
+            } catch (error){
+                console.error('Error connecting to backend',error);
+                this.showNotification('Server connection failed');
+            }
         },
 
         //update lesson spaces
@@ -280,7 +300,7 @@ new Vue({
 
         //backend search
         handleSearch:function(){
-
+            
         },
 
         //checkout
