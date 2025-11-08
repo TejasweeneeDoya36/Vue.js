@@ -182,6 +182,7 @@ new Vue({
                         this.showMessage(data.message || "Login failed");
                     }
                 }  catch(err){
+                    this.isLoading=false;
                     console.error("Login error:",err);
                     this.showMessage("Network error. Please try again");
                 }
@@ -200,7 +201,8 @@ new Vue({
                         body: JSON.stringify({
                             name: this.signupForm.name,
                             email:this.signupForm.email,
-                            password: this.signupForm.password
+                            password: this.signupForm.password,
+                            confirmPassword: this.signupForm.confirmPassword
                         })
                     });
 
@@ -221,7 +223,7 @@ new Vue({
                         //redirect user to main page
                         setTimeout(()=>{
                             window.location.href="../Vue.js/mainPage.html";
-                        });
+                        },1500);
                     }else{
                         this.showMessage(result.message || "Signup failed. Try again", "error");
                     }
