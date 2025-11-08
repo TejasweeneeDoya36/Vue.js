@@ -25,6 +25,7 @@ new Vue({
             class:'weak',
             text:'Weak'
         },
+        apiBaseUrl:'http://localhost:3000/api',
         //array of form validation rules
         validationRules:{
             email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -40,7 +41,7 @@ new Vue({
         },
         //to check if sign up is valid
         isSignupFormValid: function(){
-            const {email,password,confirmPassword} = this.signupForm;
+            const {name,email,password,confirmPassword} = this.signupForm;
             return password.length >=6 && password === confirmPassword  && this.isValidEmail(email) && name.trim().length >=2;
         }
     },
@@ -71,7 +72,7 @@ new Vue({
             this.message.type=type;
 
             //autohide success messages after 5 seconds
-            if (type=== 'success'){
+            if (type === 'success'){
                 setTimeout(()=>{
                     this.clearMessage();
                 },5000);
@@ -116,8 +117,7 @@ new Vue({
             if(!password){
                 this.errors.loginPassword='Password is required';
             } else if (password.length < 6){
-                this.errors.loginEmail='Password must be atleast 6 characters';
-
+                this.errors.loginPassword='Password must be atleast 6 characters';
             }
 
             return Object.keys(this.errors).length === 0;
@@ -209,8 +209,7 @@ new Vue({
                     if (response.ok){
                         //if sign up is successful
                         this.showMessage(`Signup successful! Welcome ${this.signupForm.name}`,"success");
-                        this.userCount++; // increase the number of user
-
+                        this.fetchUserCount;
                         //reset form
                         this.signupForm={
                             name:"",
@@ -219,9 +218,9 @@ new Vue({
                             confirmPassword:""
                         };
 
-                        //switch to login tab
+                        //redirect user to main page
                         setTimeout(()=>{
-                            this.switchTab("login");
+                            window.location.href="../Vue.js/mainPage.html";
                         });
                     }else{
                         this.showMessage(result.message || "Signup failed. Try again", "error");
@@ -290,7 +289,7 @@ new Vue({
 
         //global press listener
         document.addEventListener('keypress',this.handleKeypress);
-
+        this.fetchUserCount();
         setTimeout(()=>{
             this.showUserCount=true;
         },800);
