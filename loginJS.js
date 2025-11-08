@@ -25,7 +25,6 @@ new Vue({
             class:'weak',
             text:'Weak'
         },
-        apiBaseUrl:'', //to be changed
         //array of form validation rules
         validationRules:{
             email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -237,6 +236,18 @@ new Vue({
             }
         },
 
+        //user count
+        fetchUserCount: async function() {
+            try{
+                const data = await fetch('http://localhost:3000/user-count');
+                if (data.success){
+                    this.userCount = data.count;
+                }
+            } catch( err){
+                console.warn('failed to fetch user count:',err.message);
+            }
+        },
+
         getSubtext:function(){
             return this.activeTab === 'login'
                 ? 'Access your personalised dashboard and continue where you left off'
@@ -282,7 +293,7 @@ new Vue({
 
         setTimeout(()=>{
             this.showUserCount=true;
-        },1000);
+        },800);
     },
 
     beforeDestroy:function(){
