@@ -738,7 +738,7 @@ body{
     border-bottom: 1px solid var(--primary-color);
 }
 
-.summary-row .total{
+.summary-row.total{
     border-bottom: none;
     border-top: 2px solid var(--primary-color);
     padding-top: 1rem;
@@ -975,68 +975,4 @@ body{
         transform: translateX(0);
         opacity: 1;
     }
-}
-
-/*responsive layout design*/
-
-/*for medium screens*/
-@media (max-width: 768px){
-    .header.container{
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-
-    .header-controls{
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .navbar .container{
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .nav-links{
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .search-box{
-        min-width: auto;
-        width: 100%;
-    }
-
-    .sort-controls{
-        flex-direction: column;
-        align-items: stretch;
-        text-align: center;
-    }
-
-    .sort-group{
-        justify-content: center;
-    }
-
-    .lessons-grid{
-        grid-template-columns: 1fr;
-    }
-
-    .cart-header{
-        flex-direction: column;
-        gap: 1rem;
-        align-items: flex-start;
-    }
-
-    .cart-item{
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1.5rem;
-    }
-
-    .item-info{
-        justify-content: center;
-        text-align: center;
-    }
-
-    
 }
