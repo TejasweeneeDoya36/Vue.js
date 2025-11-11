@@ -363,7 +363,43 @@ new Vue({
                 return;
             }
 
-            this.showConfirmation= true;
+            try{
+                console.log('Submitting order:',{
+                    customer: this.checkoutForm,
+                    items: this.cartItems,
+                    total: this.totalPrice
+                });
+                //update lesson spaces in database
+
+                //save order to database
+                const orderData= {
+                    name: this.checkoutForm.name.trim(),
+                    phone:this.checkoutForm.phone.trim(),
+                    lessonNamess:this.cartItems.map(item => item.subject),
+                    spaces: this.cartItems.map(item => item.quantity),
+                    totalPrice: this.totalPrice,
+                    dateOfOrder: new Date().toISOString()
+                };
+
+                const orderResponse = await fetch ('http://localhost:3000/api/orders',{
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify(orderData)
+                });
+
+                const orderResult = await orderResponse.json();
+
+                if(orderResult.success){
+                    console.log('Order saved successfully',orderResult);
+                    this.showConfirmation= true;
+                }else{
+                    this.showNotification('Failed to save order' + orderResult.message, 'error' );
+                }
+
+            }catch(error){
+                console.log('Error during checkout',error);
+                this.showNotification('Error while processing checkout', 'error' );
+            }
         },
 
         //continue shopping
