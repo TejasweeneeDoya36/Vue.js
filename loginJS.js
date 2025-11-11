@@ -2,11 +2,14 @@
 new Vue({
     el:'#app',
     data:{
+        //Current active tab
         activeTab:'login',
+        //store login form data
         loginForm:{
             email:'',
             password:''
         },
+        //store signup form data
         signupForm:{
             name:'',
             email:'',
@@ -18,9 +21,12 @@ new Vue({
             text:'',
             type:'' //success or error
         },
+        //to show or hide loading spinner
         isLoading: false,
+        //counter for total number of registered users
         userCount:0,
         showUserCount: true,
+        //to track password strength
         passwordStrength:{
             class:'weak',
             text:'Weak'
@@ -32,15 +38,17 @@ new Vue({
         },
         passwordCheckTimeout:null
     },
+    //for reactive values that update automatically
     computed:{
         //to check if login is valid
         isLoginFormValid: function(){
             const {email,password} = this.loginForm;
-            return password.length >=6 && this.isValidEmail(email);
+            return password.length >=6 && this.isValidEmail(email); //return True/False
         },
         //to check if sign up is valid
         isSignupFormValid: function(){
             const {name,email,password,confirmPassword} = this.signupForm;
+            //return True/False
             return password.length >=6 && password === confirmPassword  && this.isValidEmail(email) && name.trim().length >=2;
         }
     },
@@ -65,7 +73,7 @@ new Vue({
         isValidEmail: function(email){
             return this.validationRules.email.test(email.trim());
         },
-
+        //display system message 
         showMessage: function(text,type){
             this.message.text=text;
             this.message.type=type;
@@ -74,22 +82,25 @@ new Vue({
             if (type === 'success'){
                 setTimeout(()=>{
                     this.clearMessage();
-                },5000);
+                },5000); // for 5 seconds
             }
         },
         
         //check password strength
         checkPasswordStrength: function(){
+            //clear previous timeout to avoid multiple rapid executions
             clearTimeout(this.passwordCheckTimeout);
             const pw = this.signupForm.password;
-           
-            let strength=0;
-            if(pw.length>=6) strength++;
-            if(pw.length>=8) strength++;
-            if(/[A-Z]/.test(pw)) strength++;
-            if(/[0-9]/.test(pw)) strength++;
-            if(/[^A-Za-z0-9]/.test(pw)) strength++;
 
+            //calculate strength score based on various criteria
+            let strength=0;
+            if(pw.length>=6) strength++; //minimum length
+            if(pw.length>=8) strength++; // good length
+            if(/[A-Z]/.test(pw)) strength++; // contains uppercase
+            if(/[0-9]/.test(pw)) strength++; //contains numbers
+            if(/[^A-Za-z0-9]/.test(pw)) strength++; //contain special characters
+
+            //determine strength level and update display properties 
             if (strength <= 2){
                 this.passwordStrength.class='weak';
                 this.passwordStrength.text='Weak';
@@ -107,18 +118,21 @@ new Vue({
             const {email,password} = this.loginForm;
             this.clearErrors();
 
+            //email validation
             if(!email){
                 this.errors.loginEmail='Email is required';
             } else if (!this.isValidEmail(email)){
                 this.errors.loginEmail='Please enter a valid email address';
             }
 
+            //password validation
             if(!password){
                 this.errors.loginPassword='Password is required';
             } else if (password.length < 6){
                 this.errors.loginPassword='Password must be atleast 6 characters';
             }
 
+            //return True/False
             return Object.keys(this.errors).length === 0;
         },
 
@@ -143,7 +157,7 @@ new Vue({
             } else if (password.length < 6){
                     this.errors.signupPassword='Password must be atleast 6 characters';
             }
-
+            //check if both password match
             if(!confirmPassword){
                 this.errors.signupConfirm='Please confirm your password';
             } else if (password !== confirmPassword ){
@@ -154,9 +168,11 @@ new Vue({
 
         //handle login form submission
         login: async function(){
+            //only proceed if form validation is true
             if (this.validateLogin()){
                 this.isLoading= true;
                 try{
+                    //send login request to backend API
                     const response = await fetch ("http://localhost:3000/api/login",{
                         method:"POST",
                         headers:{"Content-Type":"application/json"},
@@ -166,6 +182,7 @@ new Vue({
                         })
                     });
 
+                    //parse response from server
                     const result = await response.json();
                     this.isLoading=false;
 
@@ -190,6 +207,7 @@ new Vue({
 
         //handle signup form submission
         signup: async function(){
+            //only proceed if form validation is true
             if (this.validateSignup()){
                 this.isLoading= true;
                 try{
@@ -204,7 +222,7 @@ new Vue({
                             confirmPassword: this.signupForm.confirmPassword
                         })
                     });
-
+                    //parse response from server
                     const result = await response.json();
 
                     if (response.ok){
@@ -239,12 +257,13 @@ new Vue({
         //user count
         fetchUserCount: async function() {
             try{
+                //fetch from backend API
                 const response = await fetch('http://localhost:3000/api/user-count');
 
                 if(!response.ok){
                     throw new Error('Failed to fetch user count');
                 }
-
+                //parse response from server
                 const data= await response.json();
                 if (data.success){
                     this.userCount = data.count;
@@ -296,13 +315,16 @@ new Vue({
 
         //global press listener
         document.addEventListener('keypress',this.handleKeypress);
+        //fetch initial user count
         this.fetchUserCount();
+        //slight delay
         setTimeout(()=>{
             this.showUserCount=true;
         },800);
     },
 
     beforeDestroy:function(){
+        // clean up event listeners to prevent memory leaks
         document.removeEventListener('keypress',this.handleKeypress);
     }
 });
