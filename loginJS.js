@@ -195,7 +195,7 @@ new Vue({
                 this.isLoading= true;
                 try{
                     //send data to backend signup route
-                    const response = await fetch ("http://localhost:3000/signup",{
+                    const response = await fetch ("http://localhost:3000/api/signup",{
                         method: "POST",
                         headers:{"Content-Type":"application/json"},
                         body: JSON.stringify({
@@ -240,7 +240,7 @@ new Vue({
         //user count
         fetchUserCount: async function() {
             try{
-                const data = await fetch('http://localhost:3000/user-count');
+                const data = await fetch('http://localhost:3000/api/user-count');
                 if (data.success){
                     this.userCount = data.count;
                 }

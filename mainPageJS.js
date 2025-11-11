@@ -269,21 +269,24 @@ new Vue({
 
                 if ( data.success){
                     this.lessons = data.lessons.map(lesson => ({
-                        id:lesson.id || lesson._id,
+                        id: lesson.id || lesson._id,
                         subject: lesson.subject,
                         location: lesson.location,
                         price: lesson.Price || lesson.price,
-                        spaces: lesson.spaces
+                        spaces: lesson.spaces || 5
                     }));
 
                     console.log('Fetched lessons:', this.lessons);
                 }else{
                     console.error('Failed to fetch lessons',data.message);
                     this.showNotification('Error fetching lessons');
+                    this.lessons= [];
                 }
             } catch (error){
                 console.error('Error connecting to backend',error);
                 this.showNotification('Server connection failed');
+                this.lessons= [];
+                }
             }
         },
 
