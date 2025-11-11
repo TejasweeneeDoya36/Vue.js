@@ -176,7 +176,7 @@ new Vue({
                         this.loginForm.password="";
                         //redirect user to main page
                         setTimeout(()=>{
-                            window.location.href="../Vue.js/mainPage.html";
+                            window.location.href="../Vue.js/mainPageHTML.html";
                         });
                     }else{
                         this.showMessage(data.message || "Login failed");
@@ -222,7 +222,7 @@ new Vue({
 
                         //redirect user to main page
                         setTimeout(()=>{
-                            window.location.href="../Vue.js/mainPage.html";
+                            window.location.href="../Vue.js/mainPageHTML.html";
                         },1500);
                     }else{
                         this.showMessage(result.message || "Signup failed. Try again", "error");
