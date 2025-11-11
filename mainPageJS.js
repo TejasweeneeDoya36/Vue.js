@@ -370,7 +370,28 @@ new Vue({
                     total: this.totalPrice
                 });
                 //update lesson spaces in database
+                for (const item of this.cartItems){
+                    const lesson = this.lessons.find(l => l.id === item.id);
+                    if(lesson){
+                        // Compute new available spaces
+                        const newSpaces = Math.max(lesson.spaces - item.quantity, 0);
 
+                        const response = await fetch (`http://localhost:3000/api/lessons/${lesson.id}`,{
+                            method: 'PUT',
+                            headers: {'Content-Type':'application/json'},
+                            body: JSON.stringify({spaces: newSpaces})
+                        });
+
+                        const data = await response.json();
+                        if(!data.success){
+                            console.error(`Failed to update lesson spaces for ${lesson.subject}: ${data.message}`);
+                            this.showNotification(`Failed to update lesson spaces for ${lesson.subject}`, 'error');
+                        }else{
+                            console.log(`Updated lesson spaces for ${lesson.subject}`); 
+                            lesson.spaces = newSpaces; //update local data
+                        }
+                    }    
+                }
                 //save order to database
                 const orderData= {
                     name: this.checkoutForm.name.trim(),
