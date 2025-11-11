@@ -1,38 +1,41 @@
 new Vue({
     el:'#mainPage',
-    currentTheme:'default', // can be changed to dark
-    currentPage:'lessons',
-    showProfileMenu:false,
-    lessons:[], // array of lessons data to be fetched form backend
-    subjectImages:{ // mapping subjects to image filenames
-        'Math':'math.png',
-        'Hindi':'hindi.png',
-        'English':'english.png',
-        'Music': 'music.png',
-        'French':'french.png',
-        'Chemistry':'chemistry.png',
-        'Art':'art.png',
-        'History':'history.png',
-        'Geography':'geaography.png',
-        'Physics':'physics.png'
-    },
-    cartItems:[], //items added to cart
-    selectedQuantities:{}, // quantities selected before adding to cart
-    showConfirmation:false, //order confirmation visibility
-    sortBy:'subject', // current sort field
-    sortOrder:'asc', // default sort order
-    searchTimeout:null, //timeout ID for serach debounce
+    data:{
+        currentTheme:'default', // can be changed to dark
+        currentPage:'lessons',
+        showProfileMenu:false,
+        lessons:[], // array of lessons data to be fetched form backend
+        subjectImages:{ // mapping subjects to image filenames
+            'Math':'math.png',
+            'Hindi':'hindi.png',
+            'English':'english.png',
+            'Music': 'music.png',
+            'French':'french.png',
+            'Chemistry':'chemistry.png',
+            'Art':'art.png',
+            'History':'history.png',
+            'Geography':'geography.png',
+            'Physics':'physics.png'
+        },
+        searchQuery:'',
+        cartItems:[], //items added to cart
+        selectedQuantities:{}, // quantities selected before adding to cart
+        showConfirmation:false, //order confirmation visibility
+        sortBy:'subject', // current sort field
+        sortOrder:'asc', // default sort order
+        searchTimeout:null, //timeout ID for serach debounce
 
-    //checkout form details
-    checkoutForm:{
-        name:'',
-        phone:''
-    },
+        //checkout form details
+        checkoutForm:{
+            name:'',
+            phone:''
+        },
 
-    //form validation errors (should not be empty)
-    formErrors:{
-        name:'',
-        phone:''
+        //form validation errors (should not be empty)
+        formErrors:{
+            name:'',
+            phone:''
+        },
     },
 
     //computed methods
@@ -44,7 +47,7 @@ new Vue({
             //filter lessons based on search query
             if (this.searchQuery.trim()){
                 var query= this.searchQuery.toLowerCase();
-                filtered-filtered.filter(function(lesson){
+                filtered=filtered.filter(function(lesson){
                     return lesson.subject.toLowerCase().includes(query)||
                     lesson.location.toLowerCase().includes(query)||
                     lesson.price.toString().includes(query)||
@@ -147,7 +150,7 @@ new Vue({
         //lesson image
         getSubjectImage:function(subject){
             const imageName = this.subjectImages[subject];
-            return imageName? 'lessonImages' + imageName : 'lessonImages/default.jpeg';
+            return imageName? 'lessonImages/' + imageName : 'lessonImages/default.jpeg';
         },
 
         //quantity
@@ -156,8 +159,8 @@ new Vue({
         },
 
         //spaces
-        getLessonsSpaces:function(lessonId){
-            var lesson= this.lesson.find(function(l){
+        getLessonSpaces:function(lessonId){
+            var lesson= this.lessons.find(function(l){
                 return l.id === lessonId;
             });
 
@@ -165,7 +168,7 @@ new Vue({
         },
 
         //increase quantity
-        increaseQuantity: function(){
+        increaseQuantity: function(lesson){
             var currentQty= this.getSelectedQuantity(lesson.id);
             if (currentQty< lesson.spaces){
                 this.$set(this.selectedQuantities,lesson.id,currentQty + 1);
@@ -173,7 +176,7 @@ new Vue({
         },
 
         //decrease quantity
-        decreaseQuantity: function(){
+        decreaseQuantity: function(lesson){
             var currentQty= this.getSelectedQuantity(lesson.id);
             if (currentQty > 0){
                 this.$set(this.selectedQuantities,lesson.id,currentQty - 1);
@@ -215,13 +218,13 @@ new Vue({
             });
 
             var lesson = this.lessons.find(function(l){
-                return l.id === lesson.id;
+                return l.id === lessonId;
             });
 
             if(cartItem && lesson && cartItem.quantity < lesson.spaces){
                 cartItem.quantity++;
                 this.updateLessonSpaces(lessonId,-1);
-                this.showNotification('Increased quantity for' + cartItem.subject);
+                this.showNotification('Increased quantity for ' + cartItem.subject);
             }
         },
 
@@ -232,13 +235,13 @@ new Vue({
             });
 
             var lesson = this.lessons.find(function(l){
-                return l.id === lesson.id;
+                return l.id === lessonId;
             });
 
             if(cartItem && cartItem.quantity > 1){
                 cartItem.quantity--;
                 this.updateLessonSpaces(lessonId,1);
-                this.showNotification('Decreased quantity for' + cartItem.subject);
+                this.showNotification('Decreased quantity for ' + cartItem.subject);
             }else if (cartItem && cartItem.quantity === 1){
                 this.removeFromCart(lessonId);
             }
@@ -251,7 +254,7 @@ new Vue({
             });
 
             if(itemIndex>-1){
-                var removedItem= this.cartItem[itemIndex];
+                var removedItem= this.cartItems[itemIndex];
                 this.cartItems.splice(itemIndex,1);
                 this.updateLessonSpaces(lessonId,removedItem.quantity);
                 this.showNotification(removedItem.subject + ' removed from cart');
@@ -261,7 +264,7 @@ new Vue({
         //fetch lessons
         fetchLessons: async function () {
             try{
-                const response= await fetch('https://localhost:3000/api/lessons');
+                const response= await fetch('http://localhost:3000/api/lessons');
                 const data = await response.json();
 
                 if ( data.success){
@@ -270,12 +273,13 @@ new Vue({
                         subject: lesson.subject,
                         location: lesson.location,
                         price: lesson.Price || lesson.price,
+                        spaces: lesson.spaces
                     }));
 
                     console.log('Fetched lessons:', this.lessons);
                 }else{
                     console.error('Failed to fetch lessons',data.message);
-                    this.showNotification('error fetching lessons');
+                    this.showNotification('Error fetching lessons');
                 }
             } catch (error){
                 console.error('Error connecting to backend',error);
@@ -356,6 +360,8 @@ new Vue({
                 this.showNotification('Please fill out the form correctly','error');
                 return;
             }
+
+            this.showConfirmation= true;
         },
 
         //continue shopping
@@ -378,7 +384,7 @@ new Vue({
 
             //add appropriate icon based on type
             var iconClass= type === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle';
-            notification.innerHTML=`<i class="bi${iconClass}></i> ${message}"`;
+            notification.innerHTML=`<i class="bi${iconClass}"></i> ${message}`;
 
             //style based on type
             if(type === 'error'){
@@ -427,7 +433,11 @@ new Vue({
                 display:flex;
                 align-items: center;
                 gap:8px
-            }    
+            }
+            
+            .notification.error{
+                background: #dc3545 !important
+            }
         `;
         document.head.appendChild(style);
 
