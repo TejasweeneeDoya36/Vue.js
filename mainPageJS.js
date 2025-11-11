@@ -7,7 +7,7 @@ new Vue({
         lessons:[], // array of lessons data to be fetched form backend
         subjectImages:{ // mapping subjects to image filenames
             'Math':'math.png',
-            'Hindi':'hindi.png',
+            'Hindi':'hindi.jpeg',
             'English':'english.png',
             'Music': 'music.png',
             'French':'french.png',
@@ -286,7 +286,6 @@ new Vue({
                 console.error('Error connecting to backend',error);
                 this.showNotification('Server connection failed');
                 this.lessons= [];
-                }
             }
         },
 
@@ -381,13 +380,13 @@ new Vue({
         },
 
         //notification
-        showNotification:function(message,type='success'){
+        showNotification: function(message,type='success'){
             var notification = document.createElement('div');
             notification.className='notification';
 
             //add appropriate icon based on type
             var iconClass= type === 'success' ? 'bi-check-circle' : 'bi-exclamation-triangle';
-            notification.innerHTML=`<i class="bi${iconClass}"></i> ${message}`;
+            notification.innerHTML=`<i class="bi ${iconClass}"></i> ${message}`;
 
             //style based on type
             if(type === 'error'){
@@ -404,7 +403,7 @@ new Vue({
         }
     },
 
-    mounted: function(){
+    mounted:function(){
         //initialise theme on page load
         this.changeTheme(this.currentTheme);
 
