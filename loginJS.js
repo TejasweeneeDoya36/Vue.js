@@ -25,7 +25,6 @@ new Vue({
             class:'weak',
             text:'Weak'
         },
-        apiBaseUrl:'http://localhost:3000/api',
         //array of form validation rules
         validationRules:{
             email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -146,7 +145,7 @@ new Vue({
             }
 
             if(!confirmPassword){
-                this.errors.confirmPassword='Please confirm your password';
+                this.errors.signupConfirm='Please confirm your password';
             } else if (password !== confirmPassword ){
                 this.errors.signupConfirm='Password do not match';
             }
@@ -158,7 +157,7 @@ new Vue({
             if (this.validateLogin()){
                 this.isLoading= true;
                 try{
-                    const data = await fetch ("http://localhost:3000/login",{
+                    const response = await fetch ("http://localhost:3000/api/login",{
                         method:"POST",
                         headers:{"Content-Type":"application/json"},
                         body: JSON.stringify({
@@ -177,9 +176,9 @@ new Vue({
                         //redirect user to main page
                         setTimeout(()=>{
                             window.location.href="../Vue.js/mainPageHTML.html";
-                        });
+                        },1000);
                     }else{
-                        this.showMessage(data.message || "Login failed");
+                        this.showMessage(data.message || "Login failed","error");
                     }
                 }  catch(err){
                     this.isLoading=false;
@@ -211,7 +210,7 @@ new Vue({
                     if (response.ok){
                         //if sign up is successful
                         this.showMessage(`Signup successful! Welcome ${this.signupForm.name}`,"success");
-                        this.fetchUserCount;
+                        this.fetchUserCount();
                         //reset form
                         this.signupForm={
                             name:"",
@@ -240,7 +239,13 @@ new Vue({
         //user count
         fetchUserCount: async function() {
             try{
-                const data = await fetch('http://localhost:3000/api/user-count');
+                const response = await fetch('http://localhost:3000/api/user-count');
+
+                if(!response.ok){
+                    throw new Error('Failed to fetch user count');
+                }
+
+                const data= await response.json();
                 if (data.success){
                     this.userCount = data.count;
                 }
