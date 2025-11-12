@@ -1,4 +1,3 @@
-const { it } = require("node:test");
 
 new Vue({
     el:'#mainPage',
@@ -56,10 +55,12 @@ new Vue({
                     lesson.spaces.toString().includes(query)
                 });
             }
+            var self=this;
             //sort lessons according to a selected field and order
             return filtered.sort(function(a,b){
-                var aValue = a[this.sortBy];
-                var bValue = b[this.sortBy];
+                
+                var aValue = a[self.sortBy];
+                var bValue = b[self.sortBy];
 
                 //convert strings to lowercase for consistent sorting
                 if(typeof aValue === 'string'){
@@ -269,15 +270,18 @@ new Vue({
                 const response= await fetch('http://localhost:3000/api/lessons');
                 const data = await response.json();
 
-                if ( data.success && Array.isArray(data.lessons)){
-                    this.lessons = data.lessons.map(lesson => ({
-                        id: (lesson.id && lesson._id.toString) ? lesson._id.toString() : lesson.id || lesson._id,
-                        subject: lesson.subject || "Unknown",
-                        location: lesson.location || "Unknown",
-                        price: Number(lesson.price)|| 0,
-                        spaces: Number(lesson.spaces) || 5
-                    }));
-
+                if ( data.success && data.lessons){
+                    this.lessons = data.lessons.map(lesson => {
+                        const lessonId = lesson.id ? lesson._id.toString() : (lesson.id || "Unknown");
+                        const price = lesson.Price !== undefined ? lesson.Price : lesson.price;
+                        return {
+                            id: lessonId,
+                            subject: lesson.subject,
+                            location: lesson.location,
+                            price: Number(price) || 0,
+                            spaces: Number(lesson.spaces) || 0 
+                        };
+                    });
                     console.log('Fetched lessons:', this.lessons);
                 }else{
                     console.error('Failed to fetch lessons',data.message);
@@ -299,6 +303,10 @@ new Vue({
 
             if(lesson){
                 lesson.spaces+=change;
+                //ensures spaces does not go negative
+                if(lesson.spaces < 0){
+                    lesson.spaces=0;
+                }
             }
         },
 
@@ -316,6 +324,12 @@ new Vue({
             this.searchTimeout = setTimeout(async ()=>{
                 try{
                     const query = this.searchQuery.trim();
+
+                    //if query is empty,fetch all lessons
+                    if(query ===''){
+                        this.fetchLessons();
+                        return;
+                    }
 
                     //fetch from backend search API
                     const response = await fetch (`http://localhost:3000/api/search?q=${encodeURIComponent(query)}`);
@@ -440,7 +454,8 @@ new Vue({
             this.formErrors={name:'',phone:''};
             this.showConfirmation=false;
             this.currentPage='lessons';
-
+            //refresh lessons from backend
+            this.fetchLessons();
             this.showNotification('Order completed successfully');
         },
 
