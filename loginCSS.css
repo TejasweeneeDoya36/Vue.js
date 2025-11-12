@@ -14,7 +14,7 @@ body{
     align-items: center;
     padding: 20px;
 }
-
+/*main container*/
 .container{
     width: 100%;
     max-width: 850px;
@@ -25,7 +25,7 @@ body{
     display: flex;
     min-height: 550px;
 }
-
+/*welcome section*/
 .welcome-section{
     flex: 1;
     background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
@@ -38,19 +38,19 @@ body{
     text-align: center;
     transition: all 0.5s ease;
 }
-
+/*heading*/
 .welcome-section h1{
     font-size: 2.5rem;
     margin-bottom: 20px;
     font-weight: 700;
 }
-
+/*paragraph*/
 .welcome-section p{
     font-size: 1.1rem;
     line-height: 1.6;
     margin-bottom: 10px;
 }
-
+/*subtext and user count info styling*/
 .subtext{
     margin-top: 20px;
     font-size: 1rem;
@@ -64,7 +64,7 @@ body{
     border-radius: 20px;
     font-size: 0.9rem;
 }
-
+/*form section*/
 .form-section{
     flex: 1;
     padding: 40px;
@@ -78,14 +78,14 @@ body{
     max-width: 320px;
     margin: 0 auto;
 }
-
+/*tabs (Login/Register switch)*/
 .tabs{
     display: flex;
     margin-bottom: 30px;
     border-bottom: 1px solid #e0e0e0;
     position: relative;
 }
-
+/*each tab button*/
 .tab{
     padding: 10px 20px;
     cursor: pointer;
@@ -99,7 +99,7 @@ body{
     color: #2575fc;
 }
 
-
+/*active tab underline indicator*/
 .tab.active::after{
     content: '';
     position: absolute;
@@ -110,11 +110,11 @@ body{
     background-color: #2575fc;
     border-radius: 3px 3px 0 0;
 }
-
+/*form fields*/
 .form{
     animation: fadeIn 0.5s ease;
 }
-
+/*fade in animation when switching forms*/
 @keyframes fadeIn{
     from {
         opacity: 0;
@@ -126,19 +126,19 @@ body{
         transform: translateY(0);
     }
 }
-
+/*individual form input container*/
 .form-group{
     margin-bottom: 20px;
     position: relative;
 }
-
+/*label styling*/
 .form-group label{
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
     color: #555;
 }
-
+/*input field styling*/
 .form-control{
     width: 100%;
     padding: 12px 15px;
@@ -147,26 +147,26 @@ body{
     font-size: 1rem;
     transition: all 0.3s ease;
 }
-
+/*highlight input style*/
 .form-control:focus{
     border-color: #2575fc;
     box-shadow: 0 0 0 2px rgba(37,117,252,0.2);
     outline: none;
 }
-
+/*disabled input styling*/
 .form-control:disabled{
     background-color: #f5f5f5;
     cursor: not-allowed;
     opacity: 0.7;
 }
-
+/*error message style*/
 .error-message{
     color: #ff4757;
     font-size: 0.85rem;
     margin-top: 5px;
     display: block;
 }
-
+/*button style*/
 .btn{
     width: 100%;
     padding: 12px;
@@ -195,7 +195,7 @@ body{
 .btn:active:not(:disabled){
     transform: translateY(0);
 }
-
+/*forgot link*/
 .forgot-password{
     text-align: center;
     margin-top: 15px;
@@ -210,7 +210,7 @@ body{
 .forgot-password a:hover{
     text-decoration: underline;
 }
-
+/*terms link*/
 .terms{
     font-size: 0.85rem;
     color: #777;
@@ -222,7 +222,7 @@ body{
     color: #2575fc;
     text-decoration: none;
 }
-
+/*success/error/info*/
 .message{
     padding: 12px 15px;
     border-radius: 8px;
@@ -237,7 +237,7 @@ body{
     background-color: #2ed573;
     color: white;
 }
-
+/*close button style*/
 .close-btn{
     background: none;
     border: none;
@@ -246,7 +246,9 @@ body{
     cursor: pointer;
     margin-left: auto;
 }
-
+.error-message{
+    color: red;
+}
 .loading-spinner{
     display: flex;
     align-items: center;
@@ -257,7 +259,7 @@ body{
     background-color: #f8f9fa;
     border-radius: 8px;
 }
-
+/*circular spinner animation*/
 .spinner{
     width: 20px;
     height: 20px;
@@ -288,7 +290,7 @@ body{
         transform: translateY(0);
     }
 }
-
+/*password strength style*/
 .password-strength{
     margin-top: 8px;
 }
@@ -318,8 +320,10 @@ body{
 .strength-text{
     font-size: 0.8rem;
     color: #777;
+    display: block;
+    margin-top: 2px;
 }
-
+/*info/warning style*/
 .form-status{
     margin-top: 15px;
     padding: 10px;
@@ -335,35 +339,4 @@ body{
 .form-status.warning{
     background-color: #fff3e0;
     color: #f57c00; 
-}
-
-@media(max-width: 768px){
-    .container{
-        flex-direction: column;
-        max-width: 450px;
-    }
-
-    .welcome-section{
-        padding: 30px 20px;
-    }
-
-    .form-section{
-        padding: 30px 20px;
-    }
-}
-
-@media(max-width: 480px){
-
-    .welcome-section h1{
-        font-size: 2rem;
-    }
-
-    .form-section{
-        padding: 30px 20px;
-    }
-
-    .tab{
-        padding: 8px 16px;
-        font-size: 0.9rem;
-    }
 }

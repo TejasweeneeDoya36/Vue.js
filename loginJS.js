@@ -85,20 +85,35 @@ new Vue({
                 },5000); // for 5 seconds
             }
         },
-        
+        triggerPasswordCheck: function(){
+            clearTimeout(this.passwordCheckTimeout);
+
+            this.passwordCheckTimeout=setTimeout(()=>{
+                this.checkPasswordStrength();
+            },300);
+        },
         //check password strength
         checkPasswordStrength: function(){
             //clear previous timeout to avoid multiple rapid executions
             clearTimeout(this.passwordCheckTimeout);
             const pw = this.signupForm.password;
 
-            //calculate strength score based on various criteria
+            //if password is empty
+            if (!pw){
+                this.passwordStrength.class='weak';
+                this.passwordStrength.text='Weak';
+                return;
+            }
+
+            //use timeout to delay execution
+            this.passwordCheckTimeout=setTimeout(()=>{
+                //calculate strength score based on various criteria
             let strength=0;
-            if(pw.length>=6) strength++; //minimum length
-            if(pw.length>=8) strength++; // good length
-            if(/[A-Z]/.test(pw)) strength++; // contains uppercase
-            if(/[0-9]/.test(pw)) strength++; //contains numbers
-            if(/[^A-Za-z0-9]/.test(pw)) strength++; //contain special characters
+            if(pw.length>=6) strength =strength + 1; //minimum length
+            if(pw.length>=8) strength = strength + 1 ; // good length
+            if(/[A-Z]/.test(pw)) strength=strength + 1; // contains uppercase
+            if(/[0-9]/.test(pw)) strength=strength + 1; //contains numbers
+            if(/[^A-Za-z0-9]/.test(pw)) strength=strength + 1; //contain special characters
 
             //determine strength level and update display properties 
             if (strength <= 2){
@@ -111,6 +126,7 @@ new Vue({
                 this.passwordStrength.class='strong';
                 this.passwordStrength.text='Strong';
             }
+            },300);
         },
 
         // validate login form

@@ -161,7 +161,7 @@
                                 class="form-control"
                                 :class="{error: errors.signupPassword}"
                                 v-model.trim="signupForm.password"
-                                v-on:input="clearError('signupPassword') ; checkPasswordStrength()"
+                                v-on:input="clearError('signupPassword'); triggerPasswordStrength()"
                                 v-on:blur="validateField('signupPassword')"
                                 placeholder="Create your password"
                                 :disabled="isLoading">
@@ -173,7 +173,7 @@
                             <!--Password strength-->
                             <div class="password-strength" v-if="signupForm.password && activeTab === 'signup'">
                                 <div class="strength-bar" :class="passwordStrength.class"></div>
-                                <span class="strength-text">{{passwordStrength.text}}</span>
+                                <span class="strength-text">{{ passwordStrength.text }}</span>
                             </div>
                         </div>
                         <div class="form-group">
