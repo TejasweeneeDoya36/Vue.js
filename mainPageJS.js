@@ -1,3 +1,5 @@
+const { it } = require("node:test");
+
 new Vue({
     el:'#mainPage',
     data:{
@@ -267,13 +269,13 @@ new Vue({
                 const response= await fetch('http://localhost:3000/api/lessons');
                 const data = await response.json();
 
-                if ( data.success){
+                if ( data.success && Array.isArray(data.lessons)){
                     this.lessons = data.lessons.map(lesson => ({
-                        id: lesson.id || lesson._id,
-                        subject: lesson.subject,
-                        location: lesson.location,
-                        price: lesson.Price || lesson.price,
-                        spaces: lesson.spaces || 5
+                        id: (lesson.id && lesson._id.toString) ? lesson._id.toString() : lesson.id || lesson._id,
+                        subject: lesson.subject || "Unknown",
+                        location: lesson.location || "Unknown",
+                        price: Number(lesson.price)|| 0,
+                        spaces: Number(lesson.spaces) || 5
                     }));
 
                     console.log('Fetched lessons:', this.lessons);
@@ -365,39 +367,20 @@ new Vue({
 
             try{
                 console.log('Submitting order:',{
-                    customer: this.checkoutForm,
-                    items: this.cartItems,
-                    total: this.totalPrice
-                });
-                //update lesson spaces in database
-                for (const item of this.cartItems){
-                    const lesson = this.lessons.find(l => l.id === item.id);
-                    if(lesson){
-                        // Compute new available spaces
-                        const newSpaces = Math.max(lesson.spaces - item.quantity, 0);
-
-                        const response = await fetch (`http://localhost:3000/api/lessons/${lesson.id}`,{
-                            method: 'PUT',
-                            headers: {'Content-Type':'application/json'},
-                            body: JSON.stringify({spaces: newSpaces})
-                        });
-
-                        const data = await response.json();
-                        if(!data.success){
-                            console.error(`Failed to update lesson spaces for ${lesson.subject}: ${data.message}`);
-                            this.showNotification(`Failed to update lesson spaces for ${lesson.subject}`, 'error');
-                        }else{
-                            console.log(`Updated lesson spaces for ${lesson.subject}`); 
-                            lesson.spaces = newSpaces; //update local data
-                        }
-                    }    
-                }
+                    customer:this.checkoutForm,
+                    items:this.cartItems,
+                    total:this.totalPrice
+                })
+            
                 //save order to database
                 const orderData= {
                     name: this.checkoutForm.name.trim(),
                     phone:this.checkoutForm.phone.trim(),
-                    lessonNamess:this.cartItems.map(item => item.subject),
-                    spaces: this.cartItems.map(item => item.quantity),
+                    lessons: this.cartItems.map(item => ({
+                        id:item.id,
+                        subject:item.subject,
+                        quantity:item.quantity,
+                    })),
                     totalPrice: this.totalPrice,
                     dateOfOrder: new Date().toISOString()
                 };
@@ -420,6 +403,31 @@ new Vue({
             }catch(error){
                 console.log('Error during checkout',error);
                 this.showNotification('Error while processing checkout', 'error' );
+            }
+
+            //update spaces in database 
+            const spaceUpdates = this.cartItems.map(item => ({
+                id: item.id,
+                change: -item.quantity //reduce available spaces
+            }));
+
+            try{
+                const updateResponse = await fetch ('http://localhost:3000/api/update-spaces',{
+                    method: 'PUT',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({updates: spaceUpdates})
+                });
+
+                const updateResult = await updateResponse.json();
+
+                if(updateResult.success){
+                    console.log('Lesson spaces updated successfully');
+                }else{
+                    this.showNotification('Failed to update lesson spaces: ' + updateResult.message, 'error');
+                }
+            }catch(error){
+                console.error('Error updating lesson spaces:', error);
+                this.showNotification('Error updating lesson spaces', 'error');
             }
         },
 
