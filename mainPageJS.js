@@ -43,18 +43,7 @@ new Vue({
         //search lessons (combined with sorting)
         displayedLessons:function(){
             var filtered = this.lessons;
-
-            //filter lessons based on search query
-            if (this.searchQuery.trim()){
-                var query= this.searchQuery.toLowerCase();
-                //search in subject, location, price and spaces
-                filtered=filtered.filter(function(lesson){
-                    return lesson.subject.toLowerCase().includes(query)||
-                    lesson.location.toLowerCase().includes(query)||
-                    lesson.price.toString().includes(query)||
-                    lesson.spaces.toString().includes(query)
-                });
-            }
+            
             var self=this; // store vue instance reference
             //sort lessons according to a selected field and order
             return filtered.sort(function(a,b){
